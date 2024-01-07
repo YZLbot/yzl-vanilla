@@ -1,14 +1,14 @@
 package top.tbpdt
 
+import kotlinx.coroutines.cancel
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
-import net.mamoe.mirai.contact.Contact.Companion.sendImage
-import net.mamoe.mirai.event.GlobalEventChannel
-import net.mamoe.mirai.event.events.*
-import net.mamoe.mirai.utils.MiraiExperimentalApi
+import net.mamoe.mirai.event.globalEventChannel
+import net.mamoe.mirai.event.registerTo
 import net.mamoe.mirai.utils.info
-import top.tbpdt.Processor.Handler
-import java.io.File
+import top.tbpdt.configer.AutoConfig
+import top.tbpdt.configer.EmojiConfig
+import top.tbpdt.configer.GlobalConfig
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
@@ -20,13 +20,21 @@ object PluginMain : KotlinPlugin(
         author("Takeoff0518")
     }
 ) {
-    @OptIn(MiraiExperimentalApi::class)
     override fun onEnable() {
-        logger.info { "Plugin loaded" }
-        Handler.register()
+        logger.info { "正在加载配置..." }
+        AutoConfig.reload()
+        EmojiConfig.reload()
+        GlobalConfig.reload()
+        logger.info { "正在注册监听器到全局..." }
+        EmojiFetch.registerTo(globalEventChannel())
+        AdminHandler.registerTo(globalEventChannel())
     }
-    override fun onDisable() {
 
+    override fun onDisable() {
+        logger.info { "正在注销监听器..." }
+        EmojiFetch.cancel()
+        AdminHandler.cancel()
+        logger.info { "禁用成功！" }
     }
 
 }

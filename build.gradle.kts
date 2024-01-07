@@ -30,4 +30,5 @@ dependencies {
     val overflowVersion = "2.16.0-b0d758f-SNAPSHOT"
     compileOnly("top.mrxiaom:overflow-core-api:$overflowVersion")
     testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 }
