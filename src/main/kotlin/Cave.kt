@@ -19,14 +19,17 @@ import java.text.SimpleDateFormat
 object Cave : SimpleListenerHost() {
     @EventHandler(priority = EventPriority.HIGH)
     suspend fun GroupMessageEvent.handle() {
-        if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}.ca")) {
-            val text = message.serializeToMiraiCode().removePrefix(".ca").trim()
-
+        if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}ca")) {
+            val text = message.serializeToMiraiCode().removePrefix("${GlobalConfig.commandPrefix}ca").trim()
+            if (text.isEmpty()) {
+                group.sendMessage("不能添加空信息！")
+                return
+            }
             val id = CaveUtils.getCommentCount() + 1
-            CaveUtils.saveComment(id, text, sender.id, sender.nameCard)
+            CaveUtils.saveComment(id, text, sender.id, sender.nick)
             group.sendMessage("回声洞 #${id} 添加成功~")
         }
-        if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}.cq")) {
+        if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}cq")) {
             val randomId = (1..CaveUtils.getCommentCount()).random()
             val comment = loadComments(randomId)
             for (i in comment) {

@@ -31,4 +31,5 @@ dependencies {
     compileOnly("top.mrxiaom:overflow-core-api:$overflowVersion")
     testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    implementation("org.xerial:sqlite-jdbc:3.41.2.2")
 }
