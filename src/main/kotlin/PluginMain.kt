@@ -9,6 +9,7 @@ import net.mamoe.mirai.utils.info
 import top.tbpdt.configer.AutoConfig
 import top.tbpdt.configer.EmojiConfig
 import top.tbpdt.configer.GlobalConfig
+import top.tbpdt.utils.CaveUtils
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
@@ -28,12 +29,16 @@ object PluginMain : KotlinPlugin(
         logger.info { "正在注册监听器到全局..." }
         EmojiFetch.registerTo(globalEventChannel())
         AdminHandler.registerTo(globalEventChannel())
+        Cave.registerTo(globalEventChannel())
+        logger.info { "正在加载数据库" }
+        CaveUtils.initCaveDB()
     }
 
     override fun onDisable() {
         logger.info { "正在注销监听器..." }
         EmojiFetch.cancel()
         AdminHandler.cancel()
+        Cave.cancel()
         logger.info { "禁用成功！" }
     }
 
