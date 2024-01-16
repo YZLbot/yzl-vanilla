@@ -20,26 +20,32 @@ object EmojiFetch : SimpleListenerHost() {
     private val onWaiting = mutableSetOf<Long>()
 
     @EventHandler(priority = EventPriority.HIGH)
-    fun GroupMessageEvent.commandHandle() {
+    suspend fun GroupMessageEvent.commandHandle() {
         if (!EmojiConfig.enable || !message.getPlainText()
                 .startsWith("${GlobalConfig.commandPrefix}getimg")
         ) return
         onWaiting.add(sender.id)
+        group.sendMessage("请输入你要获取的表情")
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     suspend fun GroupMessageEvent.handle() {
         if (sender.id !in onWaiting) return
+        if (EmojiConfig.enable && message.getPlainText()
+                .startsWith("${GlobalConfig.commandPrefix}getimg")
+        ) return
         val result = emptyMessageChain() + PlainText("获取到的表情如下：\n")
         var imageCnt = 0
-        for (i in message.filterIsInstance<Image>().filter { it.isEmoji }) {
+//        for (i in message.filterIsInstance<Image>().filter { it.isEmoji }) {
+        for (i in message.filterIsInstance<Image>()) {
             result + Image(i.imageId) + PlainText("\nID: ${i.imageId}\nURL: ${i.queryUrl()}\n--------")
             imageCnt++
         }
         if (imageCnt == 0) {
             group.sendMessage("未能获取到表情！")
         } else {
-            group.sendMessage(PlainText("\n共计：$imageCnt\n") + result)
+            result + PlainText("\n共计：$imageCnt\n")
+            group.sendMessage(result)
         }
         onWaiting.remove(sender.id)
     }

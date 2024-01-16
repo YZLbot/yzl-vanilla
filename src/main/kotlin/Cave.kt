@@ -24,7 +24,7 @@ object Cave : SimpleListenerHost() {
 
             val id = CaveUtils.getCommentCount() + 1
             CaveUtils.saveComment(id, text, sender.id, sender.nameCard)
-            sender.sendMessage("回声洞 #${id} 添加成功~")
+            group.sendMessage("回声洞 #${id} 添加成功~")
         }
         if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}.cq")) {
             val randomId = (1..CaveUtils.getCommentCount()).random()
@@ -43,7 +43,7 @@ object Cave : SimpleListenerHost() {
                 result + i.text.deserializeMiraiCode()
                 result + PlainText("\n\n--${i.senderNick}(${i.senderId})\nat ")
                 result + PlainText(SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
-                sender.sendMessage(result)
+                group.sendMessage(result)
             }
         }
     }
