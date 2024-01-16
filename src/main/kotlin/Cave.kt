@@ -49,5 +49,27 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage(result)
             }
         }
+        if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}ci")) {
+            var id = 1
+            try {
+                id =
+                    message.serializeToMiraiCode().removePrefix("${GlobalConfig.commandPrefix}ci").trim().toInt()
+            } catch (e: NumberFormatException) {
+                group.sendMessage("解析失败……参数是不是没有填数字或者是填的不是数字？")
+            }
+            if (id !in 1..CaveUtils.getCommentCount()) {
+                group.sendMessage("你所查询的回声洞不在范围里呢，现在共有${CaveUtils.getCommentCount()}条回声洞~")
+                return
+            }
+            val comment = loadComments(id)
+            for (i in comment) {
+                var result = emptyMessageChain()
+                result += PlainText("回声洞 #${i.caveId}(${i.sha256})\n\n")
+                result += i.text.deserializeMiraiCode()
+                result += PlainText("\n\n--${i.senderNick}(${i.senderId})\nat ")
+                result += PlainText(SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
+                group.sendMessage(result)
+            }
+        }
     }
 }
