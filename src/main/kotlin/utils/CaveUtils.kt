@@ -2,11 +2,9 @@ package top.tbpdt.utils
 
 import top.tbpdt.PluginMain.dataFolder
 import top.tbpdt.PluginMain.logger
+import java.io.File
 import java.security.MessageDigest
-import java.sql.Connection
-import java.sql.Date
-import java.sql.DriverManager
-import java.sql.Timestamp
+import java.sql.*
 
 /**
  * @author Takeoff0518
@@ -19,29 +17,36 @@ object CaveUtils {
         return hashBytes.joinToString("") { "%02x".format(it) }.substring(0, 7)
     }
 
-    private fun connectToDatabase(): Connection {
-        return DriverManager.getConnection("jdbc:sqlite:${dataFolder}/cave.db")
+    private fun connectToDB(): Connection {
+        val dbPath = "${dataFolder}${File.separator}cave.db"
+        if (!File(dbPath).exists()) {
+            createDB(dbPath)
+        }
+        return DriverManager.getConnection("jdbc:sqlite:$dbPath")
     }
 
-    private fun createTable() {
-        val connection = connectToDatabase()
-        val statement = connection.createStatement()
-
-        statement.execute(
-            """
-            CREATE TABLE IF NOT EXISTS cave_comments (
-                cave_id INTEGER,
-                text TEXT,
-                sender_id LONG,
-                sender_nick TEXT,
-                date DATETIME,
-                sha_256 TEXT,
-                PRIMARY KEY (cave_id)
-            )
-    """
-        )
-
-        connection.close()
+    private fun createDB(dbPath: String) {
+        try {
+            val connection = DriverManager.getConnection("jdbc:sqlite:$dbPath")
+            connection.createStatement().use { statement ->
+                statement.execute(
+                    """
+                CREATE TABLE IF NOT EXISTS cave_comments (
+                    cave_id TEXT,
+                    text TEXT,
+                    sender_id LONG,
+                    sender_nick TEXT,
+                    sha_256 TEXT,
+                    date DATE,
+                    PRIMARY KEY (cave_id)
+                )
+                """
+                )
+            }
+            connection.close()
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
     }
 
     fun saveComment(caveId: Int, text: String, senderId: Long, senderNick: String) {
@@ -50,7 +55,7 @@ object CaveUtils {
         VALUES (?, ?, ?, ?, ?, ?)
     """
 
-        connectToDatabase().use { connection ->
+        connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
                 preparedStatement.setInt(1, caveId)
                 preparedStatement.setString(2, text)
@@ -73,7 +78,7 @@ object CaveUtils {
         SELECT text, sender_id, sender_nick, sha_256, date FROM cave_comments WHERE cave_id=?
     """
 
-        connectToDatabase().use { connection ->
+        connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
                 preparedStatement.setInt(1, caveId)
 
@@ -101,7 +106,7 @@ object CaveUtils {
     fun getCommentCount(): Int {
         val query = "SELECT COUNT(*) as count FROM cave_comments"
 
-        return connectToDatabase().use { connection ->
+        return connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
                 preparedStatement.executeQuery().use { resultSet ->
                     if (resultSet.next()) resultSet.getInt("count") else 0
@@ -121,8 +126,8 @@ object CaveUtils {
     )
 
     fun initCaveDB() {
-        logger.info("建表中，地址: ${dataFolder}/cave.db")
-        createTable()
+        logger.info("建表中，地址: ${dataFolder}${File.separator}cave.db")
+        connectToDB()
     }
 
 }
