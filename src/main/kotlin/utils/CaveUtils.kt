@@ -27,6 +27,7 @@ object CaveUtils {
 
     private fun createDB(dbPath: String) {
         try {
+            Class.forName("org.sqlite.JDBC");
             val connection = DriverManager.getConnection("jdbc:sqlite:$dbPath")
             connection.createStatement().use { statement ->
                 statement.execute(

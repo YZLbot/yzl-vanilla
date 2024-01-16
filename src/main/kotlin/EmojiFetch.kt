@@ -34,17 +34,17 @@ object EmojiFetch : SimpleListenerHost() {
         if (EmojiConfig.enable && message.getPlainText()
                 .startsWith("${GlobalConfig.commandPrefix}getimg")
         ) return
-        val result = emptyMessageChain() + PlainText("获取到的表情如下：\n")
+        var result = emptyMessageChain() + PlainText("获取到的表情如下：\n")
         var imageCnt = 0
-//        for (i in message.filterIsInstance<Image>().filter { it.isEmoji }) {
         for (i in message.filterIsInstance<Image>()) {
-            result + Image(i.imageId) + PlainText("\nID: ${i.imageId}\nURL: ${i.queryUrl()}\n--------")
+            result += i
+            result += PlainText("URL: ${i.queryUrl()}\n--------")
             imageCnt++
         }
         if (imageCnt == 0) {
             group.sendMessage("未能获取到表情！")
         } else {
-            result + PlainText("\n共计：$imageCnt\n")
+            result += PlainText("\n共计：$imageCnt\n")
             group.sendMessage(result)
         }
         onWaiting.remove(sender.id)

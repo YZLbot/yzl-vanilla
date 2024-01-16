@@ -38,11 +38,11 @@ object Cave : SimpleListenerHost() {
                     --洛雨辰~(1145141919)
                     at 23/01/16 9:15:20
                  */
-                val result = emptyMessageChain()
-                result + PlainText("回声洞 #${i.caveId}(${i.sha256})\n\n")
-                result + i.text.deserializeMiraiCode()
-                result + PlainText("\n\n--${i.senderNick}(${i.senderId})\nat ")
-                result + PlainText(SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
+                var result = emptyMessageChain()
+                result += PlainText("回声洞 #${i.caveId}(${i.sha256})\n\n")
+                result += i.text.deserializeMiraiCode()
+                result += PlainText("\n\n--${i.senderNick}(${i.senderId})\nat ")
+                result += PlainText(SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
                 group.sendMessage(result)
             }
         }
