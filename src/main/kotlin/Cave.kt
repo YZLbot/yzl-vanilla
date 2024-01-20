@@ -72,7 +72,7 @@ object Cave : SimpleListenerHost() {
                 result += PlainText("\n\n--${i.senderNick}(${i.senderId})\n")
                 result += PlainText("from ${i.groupNick}(${i.groupId})\n")
                 result += PlainText("已被捡起 ${i.pickCount} 次\n")
-                result += PlainText("at" + SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
+                result += PlainText("at " + SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
                 group.sendMessage(result)
             }
         }
