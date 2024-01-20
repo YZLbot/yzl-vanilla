@@ -47,7 +47,7 @@ object CaveUtils {
             }
             connection.close()
         } catch (e: SQLException) {
-            e.printStackTrace()
+            logger.error("数据库创建失败: ", e)
         }
     }
 
