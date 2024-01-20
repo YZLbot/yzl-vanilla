@@ -70,7 +70,7 @@ object Cave : SimpleListenerHost() {
                 result += PlainText("回声洞 #${i.caveId}\n\n")
                 result += i.text.deserializeMiraiCode()
                 result += PlainText("\n\n--${i.senderNick}(${i.senderId})\n")
-                result += PlainText("from ${i.groupNick}(${i.groupNick})\n")
+                result += PlainText("from ${i.groupNick}(${i.groupId})\n")
                 result += PlainText("已被捡起 ${i.pickCount} 次\n")
                 result += PlainText("at" + SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
                 group.sendMessage(result)
