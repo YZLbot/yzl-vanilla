@@ -9,9 +9,9 @@ import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.code.MiraiCode.deserializeMiraiCode
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.PlainText
-import org.laolittle.plugin.PatPat.dataFolder
-import org.laolittle.plugin.PatPat.logger
 import org.laolittle.plugin.model.PatPatTool.getPat
+import top.tbpdt.PluginMain.dataFolder
+import top.tbpdt.PluginMain.logger
 import top.tbpdt.configer.AutoConfig
 import top.tbpdt.utils.MessageUtils.encodeToMiraiCode
 import java.io.File
