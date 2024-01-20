@@ -10,6 +10,7 @@ import net.mamoe.mirai.message.data.emptyMessageChain
 import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.CaveUtils.loadComments
+import top.tbpdt.utils.CaveUtils.updatePickCount
 import top.tbpdt.utils.MessageUtils.getPlainText
 import java.text.SimpleDateFormat
 
@@ -26,7 +27,7 @@ object Cave : SimpleListenerHost() {
                 return
             }
             val id = CaveUtils.getCommentCount() + 1
-            CaveUtils.saveComment(id, text, sender.id, sender.nick)
+            CaveUtils.saveComment(id, text, sender.id, sender.nick, group.id, group.name)
             group.sendMessage("回声洞 #${id} 添加成功~")
         }
         if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}cq")) {
@@ -34,7 +35,7 @@ object Cave : SimpleListenerHost() {
             val comment = loadComments(randomId)
             for (i in comment) {
                 /*
-                    回声洞 #233(9098a19)
+                    回声洞 #233
 
                     逸一时误一世。
 
@@ -42,11 +43,12 @@ object Cave : SimpleListenerHost() {
                     at 23/01/16 9:15:20
                  */
                 var result = emptyMessageChain()
-                result += PlainText("回声洞 #${i.caveId}(${i.sha256})\n\n")
+                result += PlainText("回声洞 #${i.caveId}\n\n")
                 result += i.text.deserializeMiraiCode()
                 result += PlainText("\n\n--${i.senderNick}(${i.senderId})\nat ")
                 result += PlainText(SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
                 group.sendMessage(result)
+                updatePickCount(randomId)
             }
         }
         if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}ci")) {
@@ -64,10 +66,12 @@ object Cave : SimpleListenerHost() {
             val comment = loadComments(id)
             for (i in comment) {
                 var result = emptyMessageChain()
-                result += PlainText("回声洞 #${i.caveId}(${i.sha256})\n\n")
+                result += PlainText("回声洞 #${i.caveId}\n\n")
                 result += i.text.deserializeMiraiCode()
-                result += PlainText("\n\n--${i.senderNick}(${i.senderId})\nat ")
-                result += PlainText(SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
+                result += PlainText("\n\n--${i.senderNick}(${i.senderId})\n")
+                result += PlainText("from ${i.groupNick}(${i.groupNick})\n")
+                result += PlainText("已被捡起 ${i.pickCount} 次\n")
+                result += PlainText("at" + SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
                 group.sendMessage(result)
             }
         }

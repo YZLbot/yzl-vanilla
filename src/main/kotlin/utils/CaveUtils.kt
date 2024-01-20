@@ -32,11 +32,13 @@ object CaveUtils {
                 statement.execute(
                     """
                 CREATE TABLE IF NOT EXISTS cave_comments (
-                    cave_id TEXT,
+                    cave_id LONG,
                     text TEXT,
                     sender_id LONG,
                     sender_nick TEXT,
-                    sha_256 TEXT,
+                    group_id LONG,
+                    group_nick TEXT,
+                    pick_count LONG,
                     date DATE,
                     PRIMARY KEY (cave_id)
                 )
@@ -49,10 +51,10 @@ object CaveUtils {
         }
     }
 
-    fun saveComment(caveId: Int, text: String, senderId: Long, senderNick: String) {
+    fun saveComment(caveId: Int, text: String, senderId: Long, senderNick: String, groupId: Long, groupNick: String) {
         val query = """
-        INSERT INTO cave_comments (cave_id, text, sender_id, sender_nick, sha_256, date)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO cave_comments (cave_id, text, sender_id, sender_nick, group_id, group_nick, date)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     """
 
         connectToDB().use { connection ->
@@ -61,21 +63,24 @@ object CaveUtils {
                 preparedStatement.setString(2, text)
                 preparedStatement.setLong(3, senderId)
                 preparedStatement.setString(4, senderNick)
-                preparedStatement.setString(5, getSHA256(text))
+                preparedStatement.setLong(5, groupId)
+                preparedStatement.setString(6, groupNick)
 
                 val currentTimestamp = Timestamp(System.currentTimeMillis())
                 val currentDate = Date(currentTimestamp.time)
-                preparedStatement.setDate(6, currentDate)
+                preparedStatement.setDate(7, currentDate)
 
                 preparedStatement.executeUpdate()
             }
         }
     }
 
-
+    /**
+     * 查找指定 ID 回声洞
+     */
     fun loadComments(caveId: Int): List<Comment> {
         val query = """
-        SELECT text, sender_id, sender_nick, sha_256, date FROM cave_comments WHERE cave_id=?
+        SELECT text, sender_id, sender_nick, group_id, group_nick, pick_count, date FROM cave_comments WHERE cave_id=?
     """
 
         connectToDB().use { connection ->
@@ -91,7 +96,9 @@ object CaveUtils {
                             resultSet.getString("text"),
                             resultSet.getLong("sender_id"),
                             resultSet.getString("sender_nick"),
-                            resultSet.getString("sha_256"),
+                            resultSet.getLong("group_id"),
+                            resultSet.getString("group_nick"),
+                            resultSet.getLong("pick_count"),
                             resultSet.getDate("date")
                         )
                     } else {
@@ -102,6 +109,51 @@ object CaveUtils {
         }
     }
 
+    /**
+     * 查找含指定内容回声洞
+     */
+    fun loadComments(target: String): List<Comment> {
+        val query = """
+        SELECT cave_id, text, sender_id, sender_nick, group_id, group_nick, pick_count, date FROM cave_comments WHERE cave_id LIKE ?
+    """
+
+        connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setString(1, "%$target%")
+
+                val resultSet = preparedStatement.executeQuery()
+
+                return generateSequence {
+                    if (resultSet.next()) {
+                        Comment(
+                            resultSet.getInt("cave_id"),
+                            resultSet.getString("text"),
+                            resultSet.getLong("sender_id"),
+                            resultSet.getString("sender_nick"),
+                            resultSet.getLong("group_id"),
+                            resultSet.getString("group_nick"),
+                            resultSet.getLong("pick_count"),
+                            resultSet.getDate("date")
+                        )
+                    } else {
+                        null
+                    }
+                }.toList()
+            }
+        }
+    }
+
+    fun updatePickCount(caveId: Int) {
+        val query = "UPDATE cave_comments SET pick_count = pick_count + 1 WHERE cave_id = ?"
+
+        connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setInt(1, caveId)
+
+                preparedStatement.executeUpdate()
+            }
+        }
+    }
 
     fun getCommentCount(): Int {
         val query = "SELECT COUNT(*) as count FROM cave_comments"
@@ -121,7 +173,9 @@ object CaveUtils {
         val text: String,
         val senderId: Long,
         val senderNick: String,
-        val sha256: String,
+        val groupId: Long,
+        val groupNick: String,
+        val pickCount: Long,
         val date: Date
     )
 
