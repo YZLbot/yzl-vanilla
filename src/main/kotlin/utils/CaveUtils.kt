@@ -114,7 +114,7 @@ object CaveUtils {
      */
     fun loadComments(target: String): List<Comment> {
         val query = """
-        SELECT cave_id, text, sender_id, sender_nick, group_id, group_nick, pick_count, date FROM cave_comments WHERE cave_id LIKE ?
+        SELECT cave_id, text, sender_id, sender_nick, group_id, group_nick, pick_count, date FROM cave_comments WHERE text LIKE ?
     """
 
         connectToDB().use { connection ->
