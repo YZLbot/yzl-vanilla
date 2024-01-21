@@ -10,6 +10,7 @@ import top.tbpdt.configer.AutoConfig
 import top.tbpdt.configer.EmojiConfig
 import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.utils.CaveUtils
+import top.tbpdt.utils.LogStrImage
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
@@ -22,6 +23,8 @@ object PluginMain : KotlinPlugin(
     }
 ) {
     override fun onEnable() {
+        logger.info { LogStrImage.STRIMG_YZLBOT }
+        logger.info { "GitHub 地址：https://github.com/YZLbot/yzl-vanilla"}
         logger.info { "正在加载配置..." }
         AutoConfig.reload()
         EmojiConfig.reload()
