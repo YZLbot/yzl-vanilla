@@ -8,11 +8,11 @@ import net.mamoe.mirai.message.code.MiraiCode.deserializeMiraiCode
 import net.mamoe.mirai.message.data.ForwardMessageBuilder
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.emptyMessageChain
-import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.CaveUtils.loadComments
 import top.tbpdt.utils.CaveUtils.updatePickCount
-import top.tbpdt.utils.MessageUtils.getPlainText
+import top.tbpdt.utils.MessageUtils.getRemovedPrefixCommand
+import top.tbpdt.utils.MessageUtils.isCommand
 import java.text.SimpleDateFormat
 
 /**
@@ -21,8 +21,8 @@ import java.text.SimpleDateFormat
 object Cave : SimpleListenerHost() {
     @EventHandler(priority = EventPriority.HIGH)
     suspend fun GroupMessageEvent.handle() {
-        if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}ca")) {
-            val text = message.serializeToMiraiCode().removePrefix("${GlobalConfig.commandPrefix}ca").trim()
+        if (message.isCommand("ca")) {
+            val text = message.getRemovedPrefixCommand("ca")
             if (text.isEmpty()) {
                 group.sendMessage("不能添加空信息！")
                 return
@@ -31,7 +31,7 @@ object Cave : SimpleListenerHost() {
             CaveUtils.saveComment(id, text, sender.id, sender.nick, group.id, group.name)
             group.sendMessage("回声洞 #${id} 添加成功~")
         }
-        if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}cq")) {
+        if (message.isCommand("cq")) {
             val randomId = (1..CaveUtils.getCommentCount()).random()
             val comment = loadComments(randomId)
             for (i in comment) {
@@ -52,11 +52,10 @@ object Cave : SimpleListenerHost() {
                 updatePickCount(randomId)
             }
         }
-        if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}ci")) {
-            var id = 1
+        if (message.isCommand("ci")) {
+            val id: Int
             try {
-                id =
-                    message.serializeToMiraiCode().removePrefix("${GlobalConfig.commandPrefix}ci").trim().toInt()
+                id = message.getRemovedPrefixCommand("ci").toInt()
             } catch (e: NumberFormatException) {
                 group.sendMessage("解析失败……参数是不是没有填数字或者是填的不是数字？")
                 return
@@ -77,8 +76,8 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage(result)
             }
         }
-        if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}cf")) {
-            val target = message.serializeToMiraiCode().removePrefix("${GlobalConfig.commandPrefix}cf").trim()
+        if (message.isCommand("cf")) {
+            val target = message.getRemovedPrefixCommand("cf")
             if (target.isEmpty()) {
                 group.sendMessage("查询条件不能为空！")
                 return

@@ -9,8 +9,7 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.emptyMessageChain
 import top.tbpdt.configer.EmojiConfig
-import top.tbpdt.configer.GlobalConfig
-import top.tbpdt.utils.MessageUtils.getPlainText
+import top.tbpdt.utils.MessageUtils.isCommand
 
 /**
  * @author Takeoff0518
@@ -21,9 +20,7 @@ object EmojiFetch : SimpleListenerHost() {
 
     @EventHandler(priority = EventPriority.HIGH)
     suspend fun GroupMessageEvent.commandHandle() {
-        if (!EmojiConfig.enable || !message.getPlainText()
-                .startsWith("${GlobalConfig.commandPrefix}getimg")
-        ) return
+        if (!EmojiConfig.enable || !message.isCommand("getimg")) return
         onWaiting.add(sender.id)
         group.sendMessage("请输入你要获取的表情")
     }
@@ -31,9 +28,7 @@ object EmojiFetch : SimpleListenerHost() {
     @EventHandler(priority = EventPriority.NORMAL)
     suspend fun GroupMessageEvent.handle() {
         if (sender.id !in onWaiting) return
-        if (EmojiConfig.enable && message.getPlainText()
-                .startsWith("${GlobalConfig.commandPrefix}getimg")
-        ) return
+        if (EmojiConfig.enable && message.isCommand("getimg")) return
         var result = emptyMessageChain() + PlainText("获取到的表情如下：\n")
         var imageCnt = 0
         for (i in message.filterIsInstance<Image>()) {
