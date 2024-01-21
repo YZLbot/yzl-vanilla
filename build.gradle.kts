@@ -3,11 +3,11 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
 
-    id("net.mamoe.mirai-console") version "2.16.0";
+    id("net.mamoe.mirai-console") version "2.16.0"
 }
 
 group = "top.tbpdt"
-version = "2.0.1"
+version = "2.0.2"
 
 repositories {
     if (System.getenv("CI")?.toBoolean() != true) {
