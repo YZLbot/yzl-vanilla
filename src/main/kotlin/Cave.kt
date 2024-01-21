@@ -5,6 +5,7 @@ import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.code.MiraiCode.deserializeMiraiCode
+import net.mamoe.mirai.message.data.ForwardMessageBuilder
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.emptyMessageChain
 import top.tbpdt.configer.GlobalConfig
@@ -75,6 +76,27 @@ object Cave : SimpleListenerHost() {
                 result += PlainText("at " + SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
                 group.sendMessage(result)
             }
+        }
+        if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}cf")) {
+            val target = message.serializeToMiraiCode().removePrefix("${GlobalConfig.commandPrefix}cf").trim()
+            if (target.isEmpty()) {
+                group.sendMessage("查询条件不能为空！")
+                return
+            }
+            val comment = loadComments(target)
+            val forwardResult = ForwardMessageBuilder(group)
+            for (i in comment) {
+                var result = emptyMessageChain()
+                result += PlainText("回声洞 #${i.caveId}\n\n")
+                result += i.text.deserializeMiraiCode()
+                result += PlainText("\n\n--${i.senderNick}(${i.senderId})\n")
+                result += PlainText("from ${i.groupNick}(${i.groupId})\n")
+                result += PlainText("已被捡起 ${i.pickCount} 次\n")
+                result += PlainText("at " + SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
+                forwardResult.add(bot.id, "#" + i.caveId, result)
+            }
+            forwardResult.add(bot.id, bot.nick, PlainText("共计：${comment.size}"))
+            group.sendMessage(forwardResult.build())
         }
     }
 }
