@@ -82,7 +82,9 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage("查询条件不能为空！")
                 return
             }
+            group.sendMessage("查询中，请稍后……")
             val comment = loadComments(target).sortedBy { it.caveId }
+            group.sendMessage("共计：${comment.size}")
             val forwardResult = ForwardMessageBuilder(group)
             for (i in comment) {
                 var result = emptyMessageChain()
@@ -95,7 +97,6 @@ object Cave : SimpleListenerHost() {
                 forwardResult.add(bot.id, "#" + i.caveId, result)
             }
             group.sendMessage(forwardResult.build())
-            group.sendMessage("共计：${comment.size}")
         }
     }
 }
