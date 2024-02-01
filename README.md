@@ -53,7 +53,7 @@ For the good of the community as a whole, we strongly recommend that you do the 
 - [ ] 抽老婆
 - [ ] 回声洞
   - [x] 数据库存储
-  - [ ] 图片存储
+  - [x] 图片存储
   - [x] 按序号查询
   - [ ] 范围查询
   - [x] 搜索
