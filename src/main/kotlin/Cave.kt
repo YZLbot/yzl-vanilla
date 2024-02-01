@@ -31,7 +31,7 @@ object Cave : SimpleListenerHost() {
             CaveUtils.saveComment(id, text, sender.id, sender.nick, group.id, group.name)
             group.sendMessage("回声洞 #${id} 添加成功~")
         }
-        if (message.isCommand("cq") || message.isCommand(".捡")) {
+        if (message.isCommand("cq") || message.isCommand("捡")) {
             val randomId = (1..CaveUtils.getCommentCount()).random()
             val comment = loadComments(randomId)
             for (i in comment) {
