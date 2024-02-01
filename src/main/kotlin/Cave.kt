@@ -8,8 +8,10 @@ import net.mamoe.mirai.message.code.MiraiCode.deserializeMiraiCode
 import net.mamoe.mirai.message.data.ForwardMessageBuilder
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.emptyMessageChain
+import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.CaveUtils.loadComments
+import top.tbpdt.utils.CaveUtils.replaceExpiredImage
 import top.tbpdt.utils.CaveUtils.updatePickCount
 import top.tbpdt.utils.MessageUtils.getRemovedPrefixCommand
 import top.tbpdt.utils.MessageUtils.isCommand
@@ -45,7 +47,7 @@ object Cave : SimpleListenerHost() {
                  */
                 var result = emptyMessageChain()
                 result += PlainText("回声洞 #${i.caveId}\n\n")
-                result += i.text.deserializeMiraiCode()
+                result += i.replaceExpiredImage(group)
                 result += PlainText("\n\n--${i.senderNick}(${i.senderId})\nat ")
                 result += PlainText(SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
                 group.sendMessage(result)
@@ -68,7 +70,7 @@ object Cave : SimpleListenerHost() {
             for (i in comment) {
                 var result = emptyMessageChain()
                 result += PlainText("回声洞 #${i.caveId}\n\n")
-                result += i.text.deserializeMiraiCode()
+                result += i.replaceExpiredImage(group)
                 result += PlainText("\n\n--${i.senderNick}(${i.senderId})\n")
                 result += PlainText("from ${i.groupNick}(${i.groupId})\n")
                 result += PlainText("已被捡起 ${i.pickCount} 次\n")
@@ -90,7 +92,7 @@ object Cave : SimpleListenerHost() {
             for (i in comment) {
                 var result = emptyMessageChain()
                 result += PlainText("回声洞 #${i.caveId}\n\n")
-                result += i.text.deserializeMiraiCode()
+                result += i.replaceExpiredImage(group)
                 result += PlainText("\n\n--${i.senderNick}(${i.senderId})\n")
                 result += PlainText("from ${i.groupNick}(${i.groupId})\n")
                 result += PlainText("已被捡起 ${i.pickCount} 次\n")
@@ -99,6 +101,11 @@ object Cave : SimpleListenerHost() {
                 forwardResult.add(bot.id, "#" + i.caveId, result)
             }
             group.sendMessage(forwardResult.build())
+        }
+        if (message.isCommand("rc") && (sender.id in GlobalConfig.admin)) {
+            group.sendMessage("下载中……")
+            val(totalCount,successCount) = CaveUtils.downloadAllPictures()
+            group.sendMessage("下载结束~\n共向服务器请求 $totalCount 张，成功下载 $successCount 张")
         }
     }
 }

@@ -1,8 +1,20 @@
 package top.tbpdt.utils
 
+import net.mamoe.mirai.Bot
+import net.mamoe.mirai.contact.Contact
+import net.mamoe.mirai.message.code.MiraiCode.deserializeMiraiCode
+import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.message.data.Image.Key.queryUrl
+import net.mamoe.mirai.message.data.MessageChain
+import net.mamoe.mirai.message.data.emptyMessageChain
+import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import top.tbpdt.PluginMain.dataFolder
 import top.tbpdt.PluginMain.logger
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 import java.security.MessageDigest
 import java.sql.*
 
@@ -11,21 +23,23 @@ import java.sql.*
  */
 object CaveUtils {
 
+    private val picPath = "${dataFolder}${File.separator}images${File.separator}"
+    private val dbPath = "${dataFolder}${File.separator}cave.db"
+
     private fun getSHA256(input: String): String {
         val digest = MessageDigest.getInstance("SHA-256")
         val hashBytes = digest.digest(input.toByteArray())
-        return hashBytes.joinToString("") { "%02x".format(it) }.substring(0, 7)
+        return hashBytes.joinToString("") { "%02x".format(it) }
     }
 
     private fun connectToDB(): Connection {
-        val dbPath = "${dataFolder}${File.separator}cave.db"
         if (!File(dbPath).exists()) {
-            createDB(dbPath)
+            createDB()
         }
         return DriverManager.getConnection("jdbc:sqlite:$dbPath")
     }
 
-    private fun createDB(dbPath: String) {
+    private fun createDB() {
         try {
             val connection = DriverManager.getConnection("jdbc:sqlite:$dbPath")
             connection.createStatement().use { statement ->
@@ -167,6 +181,149 @@ object CaveUtils {
         }
     }
 
+    /**
+     * 获取文件扩展名。如果没有则用 `.png` 替代
+     * @param url 图片链接
+     */
+    private fun getFileExtension(url: String): String {
+        return try {
+            val imageUrl = URL(url)
+            val connection = imageUrl.openConnection()
+            val contentType = connection.contentType
+
+//        when (contentType) {
+//            "image/jpeg" -> ".jpg"
+//            "image/png" -> ".png"
+//            "image/gif" -> ".gif"
+//            else -> ".png"
+//        }
+            "." + contentType.removePrefix("image/")
+        } catch (e: IOException) {
+            logger.warning("获取文件扩展名时出错：$e")
+            ".unknown"
+        }
+
+    }
+
+    private fun getFileName(url: String): String {
+        return getSHA256(url) + getFileExtension(url)
+    }
+
+    /**
+     * 下载图片，并将其保存在 images 目录下
+     * @param url 图片地址（http）
+     * @exception Exception 图片下载失败
+     */
+    private fun downloadAndSaveImage(url: String) {
+        try {
+            val fileName = getFileName(url)
+            val savePath = picPath + fileName
+            File(picPath).mkdirs()
+            val imageUrl = URL(url)
+            imageUrl.openConnection().getInputStream().use { input ->
+                FileOutputStream(savePath).use { output ->
+                    input.copyTo(output)
+                }
+            }
+        } catch (e: IOException) {
+            logger.warning("下载图片时出现意外：", e)
+        }
+    }
+
+    /**
+     * 检查图片是否可用
+     *  @param url 图片地址（http）
+     *  @return 图片是否可用
+     */
+    private fun isHttpFileExists(url: String): Boolean {
+        return try {
+            val connection = URL(url).openConnection() as HttpURLConnection
+            connection.requestMethod = "HEAD"
+            val responseCode = connection.responseCode
+            return responseCode == HttpURLConnection.HTTP_OK
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    /**
+     * 更新单条回声洞信息
+     */
+    private fun refreshCaveComments(caveId: Int, text: String) {
+        val query = "UPDATE cave_comments SET text = ? WHERE cave_id = ?"
+
+        connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setString(1, text)
+                preparedStatement.setInt(2, caveId)
+
+                preparedStatement.executeUpdate()
+            }
+        }
+    }
+
+    /**
+     * 替换过期的图片（重新上传），并更新回声洞里的图片信息
+     */
+    suspend fun Comment.replaceExpiredImage(contact: Contact): MessageChain {
+        val message = text.deserializeMiraiCode()
+        var result = emptyMessageChain()
+        for (i in message.filterIsInstance<Image>()) {
+            /*
+            tx 的 imageId 规则已改变：
+            Caused by: java.lang.IllegalArgumentException: Illegal imageId:
+            'http://gchat.qpic.cn/gchatpic_new/0/0-0-40B0CDB56899F21C897A8771EEA45DF7/0?term=2'.
+            ImageId must match Regex `/[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}`,
+            `/[0-9]*-[0-9]*-[0-9a-fA-F]{32}` or `\{[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}\}\..{3,5}`
+             */
+//                if (i.isUploaded(bot)) {
+            if (isHttpFileExists(i.queryUrl())) {
+                result += i
+            } else {
+                val updatedImage: Image
+                val imageFile =
+                    File("${dataFolder}${File.separator}images${File.separator}${getFileName(i.queryUrl())}")
+                if (imageFile.exists()) {
+                    imageFile.toExternalResource().use { resource ->
+                        updatedImage = contact.uploadImage(resource)
+                    }
+                    result += updatedImage
+                } else {
+                    result += "[过期的图片]"
+                }
+
+            }
+        }
+        if (message != result) {
+            refreshCaveComments(this.caveId, result.serializeToMiraiCode())
+        }
+        return result
+    }
+
+    suspend fun downloadAllPictures(): Pair<Int, Int> {
+        var totalCount = 0
+        var successCount = 0
+        for (i in 1..getCommentCount()) {
+            val comment = loadComments(i).first()
+            for (element in comment.text.deserializeMiraiCode().filterIsInstance<Image>()) {
+
+                logger.info("询问 ${element.queryUrl()}")
+                if (File(picPath + getFileName(element.queryUrl())).exists()) {
+                    logger.warning("文件已存在")
+                    continue
+                }
+                totalCount++
+                if (!isHttpFileExists(element.queryUrl())) {
+                    logger.warning("图片已过期")
+                    continue
+                }
+                logger.info("正在下载……")
+                downloadAndSaveImage(element.queryUrl())
+                successCount++
+            }
+        }
+        return Pair(totalCount, successCount)
+    }
 
     data class Comment(
         val caveId: Int,
@@ -181,7 +338,7 @@ object CaveUtils {
 
     fun initCaveDB() {
         Class.forName("org.sqlite.JDBC")
-        logger.info("建表中，地址: ${dataFolder}${File.separator}cave.db")
+        logger.info("建表中，地址: $dbPath")
         connectToDB()
     }
 
