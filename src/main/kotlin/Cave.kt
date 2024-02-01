@@ -31,7 +31,7 @@ object Cave : SimpleListenerHost() {
             CaveUtils.saveComment(id, text, sender.id, sender.nick, group.id, group.name)
             group.sendMessage("回声洞 #${id} 添加成功~")
         }
-        if (message.isCommand("cq")) {
+        if (message.isCommand("cq") || message.isCommand(".捡")) {
             val randomId = (1..CaveUtils.getCommentCount()).random()
             val comment = loadComments(randomId)
             for (i in comment) {
@@ -74,6 +74,7 @@ object Cave : SimpleListenerHost() {
                 result += PlainText("已被捡起 ${i.pickCount} 次\n")
                 result += PlainText("at " + SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
                 group.sendMessage(result)
+                updatePickCount(id)
             }
         }
         if (message.isCommand("cf")) {
@@ -94,6 +95,7 @@ object Cave : SimpleListenerHost() {
                 result += PlainText("from ${i.groupNick}(${i.groupId})\n")
                 result += PlainText("已被捡起 ${i.pickCount} 次\n")
                 result += PlainText("at " + SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
+                updatePickCount(i.caveId)
                 forwardResult.add(bot.id, "#" + i.caveId, result)
             }
             group.sendMessage(forwardResult.build())
