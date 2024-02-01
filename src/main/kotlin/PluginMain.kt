@@ -16,7 +16,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "top.tbpdt.vanilla",
         name = "YZLbot-Vanilla",
-        version = "2.0.2",
+        version = "2.0.3",
     ) {
 
         author("Takeoff0518")

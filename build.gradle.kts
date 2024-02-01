@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "top.tbpdt"
-version = "2.0.2"
+version = "2.0.3"
 
 repositories {
     if (System.getenv("CI")?.toBoolean() != true) {
@@ -27,7 +27,7 @@ mirai {
 }
 
 dependencies {
-    val overflowVersion = "2.16.0-a1e9d27-SNAPSHOT"
+    val overflowVersion = "2.16.0+"
     compileOnly("top.mrxiaom:overflow-core-api:$overflowVersion")
     testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
