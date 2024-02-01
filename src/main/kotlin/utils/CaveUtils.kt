@@ -1,6 +1,5 @@
 package top.tbpdt.utils
 
-import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.message.code.MiraiCode.deserializeMiraiCode
 import net.mamoe.mirai.message.data.Image
@@ -268,7 +267,7 @@ object CaveUtils {
     suspend fun Comment.replaceExpiredImage(contact: Contact): MessageChain {
         val message = text.deserializeMiraiCode()
         var result = emptyMessageChain()
-        for (i in message.filterIsInstance<Image>()) {
+        for (i in message) {
             /*
             tx 的 imageId 规则已改变：
             Caused by: java.lang.IllegalArgumentException: Illegal imageId:
@@ -277,21 +276,24 @@ object CaveUtils {
             `/[0-9]*-[0-9]*-[0-9a-fA-F]{32}` or `\{[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}\}\..{3,5}`
              */
 //                if (i.isUploaded(bot)) {
-            if (isHttpFileExists(i.queryUrl())) {
-                result += i
-            } else {
-                val updatedImage: Image
-                val imageFile =
-                    File("${dataFolder}${File.separator}images${File.separator}${getFileName(i.queryUrl())}")
-                if (imageFile.exists()) {
-                    imageFile.toExternalResource().use { resource ->
-                        updatedImage = contact.uploadImage(resource)
-                    }
-                    result += updatedImage
+            if (i is Image) {
+                if (isHttpFileExists(i.queryUrl())) {
+                    result += i
                 } else {
-                    result += "[过期的图片]"
+                    val updatedImage: Image
+                    val imageFile =
+                        File("${dataFolder}${File.separator}images${File.separator}${getFileName(i.queryUrl())}")
+                    if (imageFile.exists()) {
+                        imageFile.toExternalResource().use { resource ->
+                            updatedImage = contact.uploadImage(resource)
+                        }
+                        result += updatedImage
+                    } else {
+                        result += " [过期的图片] "
+                    }
                 }
-
+            } else {
+                result += i
             }
         }
         if (message != result) {
