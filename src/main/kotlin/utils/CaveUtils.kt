@@ -40,25 +40,26 @@ object CaveUtils {
 
     private fun createDB() {
         try {
-            val connection = DriverManager.getConnection("jdbc:sqlite:$dbPath")
-            connection.createStatement().use { statement ->
-                statement.execute(
+            File(dbPath).createNewFile()
+            DriverManager.getConnection("jdbc:sqlite:$dbPath").use { connection ->
+                connection.createStatement().use { statement ->
+                    statement.execute(
+                        """
+                    CREATE TABLE IF NOT EXISTS cave_comments (
+                        cave_id LONG,
+                        text TEXT,
+                        sender_id LONG,
+                        sender_nick TEXT,
+                        group_id LONG,
+                        group_nick TEXT,
+                        pick_count LONG,
+                        date DATE,
+                        PRIMARY KEY (cave_id)
+                    )
                     """
-                CREATE TABLE IF NOT EXISTS cave_comments (
-                    cave_id LONG,
-                    text TEXT,
-                    sender_id LONG,
-                    sender_nick TEXT,
-                    group_id LONG,
-                    group_nick TEXT,
-                    pick_count LONG,
-                    date DATE,
-                    PRIMARY KEY (cave_id)
-                )
-                """
-                )
+                    )
+                }
             }
-            connection.close()
         } catch (e: SQLException) {
             logger.error("数据库创建失败: ", e)
         }
