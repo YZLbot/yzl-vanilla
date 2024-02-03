@@ -26,8 +26,11 @@ object MessageUtils {
     }
 
     fun MessageChain.isCommand(prefix: String): Boolean {
-        if (GlobalConfig.commandPrefix != this.serializeToMiraiCode().first()) return false
-        return this.serializeToMiraiCode().removePrefix(GlobalConfig.commandPrefix.toString()).trim().startsWith(prefix)
+        val serializedCode = this.serializeToMiraiCode()
+        if (serializedCode.isNotEmpty() && GlobalConfig.commandPrefix != serializedCode.first()) {
+            return false
+        }
+        return serializedCode.removePrefix(GlobalConfig.commandPrefix.toString()).trim().startsWith(prefix)
     }
 
     fun MessageChain.getRemovedPrefixCommand(prefix: String): String {
