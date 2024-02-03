@@ -4,7 +4,6 @@ import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
 import net.mamoe.mirai.event.events.GroupMessageEvent
-import net.mamoe.mirai.message.code.MiraiCode.deserializeMiraiCode
 import net.mamoe.mirai.message.data.ForwardMessageBuilder
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.emptyMessageChain
@@ -31,6 +30,7 @@ object Cave : SimpleListenerHost() {
             }
             val id = CaveUtils.getCommentCount() + 1
             CaveUtils.saveComment(id, text, sender.id, sender.nick, group.id, group.name)
+            loadComments(id).first().replaceExpiredImage(group)
             group.sendMessage("回声洞 #${id} 添加成功~")
         }
         if (message.isCommand("cq") || message.isCommand("捡")) {
@@ -104,7 +104,7 @@ object Cave : SimpleListenerHost() {
                 updatePickCount(i.caveId)
                 forwardResult.add(bot.id, "#" + i.caveId, result)
                 // 超长分条发送
-                if (forwardResult.size > 20){
+                if (forwardResult.size > 20) {
                     group.sendMessage(forwardResult.build())
                     forwardResult.clear()
                 }
