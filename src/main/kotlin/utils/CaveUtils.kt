@@ -290,7 +290,7 @@ object CaveUtils {
                         }
                         result += updatedImage
                         if(!imageFile.renameTo(File("$picPath${getFileName(updatedImage.queryUrl())}"))){
-                            logger.info("文件重命名失败！")
+                            logger.warning("文件重命名失败！")
                         }
                     } else {
                         result += " [过期的图片] "
