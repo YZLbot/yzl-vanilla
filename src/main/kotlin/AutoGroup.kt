@@ -1,7 +1,6 @@
 package top.tbpdt
 
 import kotlinx.coroutines.delay
-import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
@@ -9,12 +8,9 @@ import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.code.MiraiCode.deserializeMiraiCode
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.PlainText
-import org.laolittle.plugin.model.PatPatTool.getPat
-import top.tbpdt.PluginMain.dataFolder
 import top.tbpdt.PluginMain.logger
 import top.tbpdt.configer.AutoConfig
 import top.tbpdt.utils.MessageUtils.encodeToMiraiCode
-import java.io.File
 
 /**
  * @author Takeoff0518
@@ -37,10 +33,6 @@ object AutoGroup : SimpleListenerHost() {
     suspend fun MemberJoinEvent.handle() {
         if (AutoConfig.newMemberJoinMessage.isNotEmpty()) {
             group.sendMessage(AutoConfig.newMemberJoinMessage.random())
-        }
-        if (AutoConfig.newMemberJoinPat) {
-            getPat(member, 80)
-            group.sendImage(File("$dataFolder/tmp").resolve("${member.id}_pat.gif"))
         }
     }
 

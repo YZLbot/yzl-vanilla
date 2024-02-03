@@ -16,9 +16,6 @@ object AutoConfig : AutoSavePluginConfig("AutoConfig") {
     )
     val newMemberJoinMessage: Set<String> by value(setOf("是新人诶……唔……可以吃嘛？", "欢迎~"))
 
-    @ValueDescription("新人入群摸头")
-    val newMemberJoinPat: Boolean by value(true)
-
     @ValueDescription(
         """
         Bot 被戳时的回复
