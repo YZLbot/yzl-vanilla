@@ -87,6 +87,10 @@ object Cave : SimpleListenerHost() {
             }
             group.sendMessage("查询中，请稍后……")
             val comment = loadComments(target).sortedBy { it.caveId }
+            if (comment.isEmpty()) {
+                group.sendMessage("一个也没找到惹……")
+                return
+            }
             group.sendMessage("共计：${comment.size}")
             val forwardResult = ForwardMessageBuilder(group)
             for (i in comment) {
@@ -99,12 +103,17 @@ object Cave : SimpleListenerHost() {
                 result += PlainText("at " + SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
                 updatePickCount(i.caveId)
                 forwardResult.add(bot.id, "#" + i.caveId, result)
+                // 超长分条发送
+                if (forwardResult.size > 20){
+                    group.sendMessage(forwardResult.build())
+                    forwardResult.clear()
+                }
             }
             group.sendMessage(forwardResult.build())
         }
         if (message.isCommand("rc") && (sender.id in GlobalConfig.admin)) {
             group.sendMessage("下载中……")
-            val(totalCount,successCount) = CaveUtils.downloadAllPictures()
+            val (totalCount, successCount) = CaveUtils.downloadAllPictures()
             group.sendMessage("下载结束~\n共向服务器请求 $totalCount 张，成功下载 $successCount 张")
         }
     }
