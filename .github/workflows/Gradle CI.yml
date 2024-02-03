@@ -50,4 +50,4 @@ jobs:
         with:
           name: "yzl-vanilla-build"
           # Directory containing files to upload
-          path: yzl-vanilla/build/mirai/
+          path: build/mirai/
