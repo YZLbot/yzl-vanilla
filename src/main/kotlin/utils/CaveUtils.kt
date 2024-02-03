@@ -283,12 +283,15 @@ object CaveUtils {
                 } else {
                     val updatedImage: Image
                     val imageFile =
-                        File("${dataFolder}${File.separator}images${File.separator}${getFileName(i.queryUrl())}")
+                        File("$picPath${getFileName(i.queryUrl())}")
                     if (imageFile.exists()) {
                         imageFile.toExternalResource().use { resource ->
                             updatedImage = contact.uploadImage(resource)
                         }
                         result += updatedImage
+                        if(!imageFile.renameTo(File("$picPath${getFileName(updatedImage.queryUrl())}"))){
+                            logger.info("文件重命名失败！")
+                        }
                     } else {
                         result += " [过期的图片] "
                     }
