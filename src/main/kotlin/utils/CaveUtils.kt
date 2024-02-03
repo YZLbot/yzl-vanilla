@@ -249,7 +249,7 @@ object CaveUtils {
     /**
      * 更新单条回声洞信息
      */
-    private fun refreshCaveComments(caveId: Int, text: String) {
+    private fun updateCaveComments(caveId: Int, text: String) {
         val query = "UPDATE cave_comments SET text = ? WHERE cave_id = ?"
 
         connectToDB().use { connection ->
@@ -301,7 +301,7 @@ object CaveUtils {
             }
         }
         if (message != result) {
-            refreshCaveComments(this.caveId, result.serializeToMiraiCode())
+            updateCaveComments(this.caveId, result.serializeToMiraiCode())
         }
         return result
     }
