@@ -26,7 +26,7 @@ object PluginMain : KotlinPlugin(
 ) {
     override fun onEnable() {
         logger.info { LogStrImage.STRIMG_YZLBOT }
-        logger.info { "GitHub 地址：https://github.com/YZLbot/yzl-vanilla"}
+        logger.info { "GitHub 地址：https://github.com/YZLbot/yzl-vanilla" }
         logger.info { "正在加载配置..." }
         AutoConfig.reload()
         EmojiConfig.reload()

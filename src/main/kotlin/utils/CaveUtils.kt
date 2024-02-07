@@ -280,7 +280,7 @@ object CaveUtils {
                             updatedImage = contact.uploadImage(resource)
                         }
                         result += updatedImage
-                        if(!imageFile.renameTo(File("$picPath${getFileName(updatedImage.queryUrl())}"))){
+                        if (!imageFile.renameTo(File("$picPath${getFileName(updatedImage.queryUrl())}"))) {
                             logger.warning("文件重命名失败！")
                         }
                     } else {
