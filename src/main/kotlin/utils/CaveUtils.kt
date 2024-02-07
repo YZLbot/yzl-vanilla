@@ -15,7 +15,8 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.security.MessageDigest
-import java.sql.*
+import java.sql.Date
+import java.sql.Timestamp
 
 /**
  * @author Takeoff0518
@@ -23,7 +24,6 @@ import java.sql.*
 object CaveUtils {
 
     private val picPath = "${dataFolder}${File.separator}images${File.separator}"
-    private val dbPath = "${dataFolder}${File.separator}cave.db"
 
     private fun getSHA256(input: String): String {
         val digest = MessageDigest.getInstance("SHA-256")
@@ -31,20 +31,11 @@ object CaveUtils {
         return hashBytes.joinToString("") { "%02x".format(it) }
     }
 
-    private fun connectToDB(): Connection {
-        if (!File(dbPath).exists()) {
-            createDB()
-        }
-        return DriverManager.getConnection("jdbc:sqlite:$dbPath")
-    }
-
-    private fun createDB() {
-        try {
-            File(dbPath).createNewFile()
-            DriverManager.getConnection("jdbc:sqlite:$dbPath").use { connection ->
-                connection.createStatement().use { statement ->
-                    statement.execute(
-                        """
+    fun createTable() {
+        DBUtils.connectToDB().use { connection ->
+            DBUtils.createTable(
+                connection,
+                """
                     CREATE TABLE IF NOT EXISTS cave_comments (
                         cave_id LONG,
                         text TEXT,
@@ -57,12 +48,9 @@ object CaveUtils {
                         PRIMARY KEY (cave_id)
                     )
                     """
-                    )
-                }
-            }
-        } catch (e: SQLException) {
-            logger.error("数据库创建失败: ", e)
+            )
         }
+        logger.info("已尝试创建数据表 cave_comments")
     }
 
     fun saveComment(caveId: Int, text: String, senderId: Long, senderNick: String, groupId: Long, groupNick: String) {
@@ -71,7 +59,7 @@ object CaveUtils {
         VALUES (?, ?, ?, ?, ?, ?, ?)
     """
 
-        connectToDB().use { connection ->
+        DBUtils.connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
                 preparedStatement.setInt(1, caveId)
                 preparedStatement.setString(2, text)
@@ -97,7 +85,7 @@ object CaveUtils {
         SELECT text, sender_id, sender_nick, group_id, group_nick, pick_count, date FROM cave_comments WHERE cave_id=?
     """
 
-        connectToDB().use { connection ->
+        DBUtils.connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
                 preparedStatement.setInt(1, caveId)
 
@@ -131,7 +119,7 @@ object CaveUtils {
         SELECT cave_id, text, sender_id, sender_nick, group_id, group_nick, pick_count, date FROM cave_comments WHERE text LIKE ?
     """
 
-        connectToDB().use { connection ->
+        DBUtils.connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
                 preparedStatement.setString(1, "%$target%")
 
@@ -160,7 +148,7 @@ object CaveUtils {
     fun updatePickCount(caveId: Int) {
         val query = "UPDATE cave_comments SET pick_count = pick_count + 1 WHERE cave_id = ?"
 
-        connectToDB().use { connection ->
+        DBUtils.connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
                 preparedStatement.setInt(1, caveId)
 
@@ -172,7 +160,7 @@ object CaveUtils {
     fun getCommentCount(): Int {
         val query = "SELECT COUNT(*) as count FROM cave_comments"
 
-        return connectToDB().use { connection ->
+        return DBUtils.connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
                 preparedStatement.executeQuery().use { resultSet ->
                     if (resultSet.next()) resultSet.getInt("count") else 0
@@ -252,7 +240,7 @@ object CaveUtils {
     private fun updateCaveComments(caveId: Int, text: String) {
         val query = "UPDATE cave_comments SET text = ? WHERE cave_id = ?"
 
-        connectToDB().use { connection ->
+        DBUtils.connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
                 preparedStatement.setString(1, text)
                 preparedStatement.setInt(2, caveId)
@@ -341,11 +329,4 @@ object CaveUtils {
         val pickCount: Long,
         val date: Date
     )
-
-    fun initCaveDB() {
-        Class.forName("org.sqlite.JDBC")
-        logger.info("建表中，地址: $dbPath")
-        connectToDB()
-    }
-
 }

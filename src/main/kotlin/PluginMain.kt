@@ -9,7 +9,9 @@ import net.mamoe.mirai.utils.info
 import top.tbpdt.configer.AutoConfig
 import top.tbpdt.configer.EmojiConfig
 import top.tbpdt.configer.GlobalConfig
+import top.tbpdt.utils.AccountUtils
 import top.tbpdt.utils.CaveUtils
+import top.tbpdt.utils.DBUtils
 import top.tbpdt.utils.LogStrImage
 
 object PluginMain : KotlinPlugin(
@@ -34,7 +36,9 @@ object PluginMain : KotlinPlugin(
         AdminHandler.registerTo(globalEventChannel())
         Cave.registerTo(globalEventChannel())
         logger.info { "正在加载数据库" }
-        CaveUtils.initCaveDB()
+        DBUtils.initCaveDB()
+        AccountUtils.createTable()
+        CaveUtils.createTable()
     }
 
     override fun onDisable() {
