@@ -27,7 +27,7 @@ object MessageUtils {
 
     fun MessageChain.isCommand(prefix: String): Boolean {
         val serializedCode = this.serializeToMiraiCode()
-        if (serializedCode.isNotEmpty() && GlobalConfig.commandPrefix != serializedCode.first()) {
+        if (serializedCode.isEmpty() || GlobalConfig.commandPrefix != serializedCode.firstOrNull()) {
             return false
         }
         return serializedCode.removePrefix(GlobalConfig.commandPrefix.toString()).trim().startsWith(prefix)
