@@ -268,6 +268,9 @@ object CaveUtils {
             if (i is Image) {
                 if (isHttpFileExists(i.queryUrl())) {
                     result += i
+                    if (!File("$picPath${getFileName(i.queryUrl())}").exists()) {
+                        downloadAndSaveImage(i.queryUrl())
+                    }
                 } else {
                     val updatedImage: Image
                     val imageFile =
