@@ -1,5 +1,6 @@
 package top.tbpdt
 
+import EatDots
 import kotlinx.coroutines.cancel
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -35,6 +36,7 @@ object PluginMain : KotlinPlugin(
         EmojiFetch.registerTo(globalEventChannel())
         AdminHandler.registerTo(globalEventChannel())
         Cave.registerTo(globalEventChannel())
+        EatDots.registerTo(globalEventChannel())
         logger.info { "正在加载数据库" }
         DBUtils.initCaveDB()
         AccountUtils.createTable()
@@ -46,6 +48,7 @@ object PluginMain : KotlinPlugin(
         EmojiFetch.cancel()
         AdminHandler.cancel()
         Cave.cancel()
+        EatDots.cancel()
         logger.info { "禁用成功！" }
     }
 
