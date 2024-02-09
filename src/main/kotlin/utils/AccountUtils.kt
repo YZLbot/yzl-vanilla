@@ -3,8 +3,6 @@ package top.tbpdt.utils
 import top.tbpdt.PluginMain.logger
 import java.sql.Date
 import java.sql.Timestamp
-import java.time.Duration
-import java.time.LocalDate
 
 /**
  * @author Takeoff0518
@@ -54,10 +52,10 @@ object AccountUtils {
 
                 preparedStatement.setDate(3, currentDate)
                 preparedStatement.setDate(4, currentDate)
-                preparedStatement.setLong(5, 0)
-                preparedStatement.setLong(6, 0)
-                preparedStatement.setLong(7, 0)
-                preparedStatement.setLong(8, 0)
+                preparedStatement.setLong(5, 0) // total_sign_days
+                preparedStatement.setLong(6, 0) // continuous_sign_days
+                preparedStatement.setLong(7, 0) // money
+                preparedStatement.setLong(8, 0) // experience
 
                 preparedStatement.executeUpdate()
             }
@@ -78,7 +76,6 @@ object AccountUtils {
                 preparedStatement.executeUpdate()
             }
         }
-
     }
 
     /**
@@ -97,18 +94,57 @@ object AccountUtils {
                 preparedStatement.executeUpdate()
             }
         }
-
     }
 
-    /*
-    fun hasSignedToday(userId: Long): Boolean {
-        return
+    /**
+     * 更新钱数
+     */
+    fun updateMoney(userId: Long, money: Int) {
+        val query = "UPDATE accounts SET user_nick = ? WHERE user_id = ?"
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setInt(1, money)
+                preparedStatement.setLong(2, userId)
+
+                preparedStatement.executeUpdate()
+            }
+        }
     }
 
-    fun getSignDate(userId: Long): LocalDate {
+    /**
+     * 获取账号信息
+     */
+    fun queryAccount(userId: Long): List<Account> {
+        val query = """
+        SELECT user_nick, encounter_date, last_sign_date, total_sign_days, continuous_sign_days, money, experience 
+        FROM accounts WHERE user_id = ?
+    """
 
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setLong(1, userId)
+
+                val resultSet = preparedStatement.executeQuery()
+
+                return generateSequence {
+                    if (resultSet.next()) {
+                        Account(
+                            userId,
+                            resultSet.getString("user_nick"),
+                            resultSet.getDate("encounter_date"),
+                            resultSet.getDate("last_sign_date"),
+                            resultSet.getInt("total_sign_days"),
+                            resultSet.getInt("continuous_sign_days"),
+                            resultSet.getInt("money"),
+                            resultSet.getInt("experience")
+                        )
+                    } else {
+                        null
+                    }
+                }.toList()
+            }
+        }
     }
-    */
 
     /**
      * 签到
@@ -127,4 +163,14 @@ object AccountUtils {
     }
     */
 
+    data class Account(
+        val userId: Long,
+        val userNick: String,
+        val encounterDate: Date,
+        val lastSignDate: Date,
+        val totalSignDays: Int,
+        val continuousSignDays: Int,
+        val money: Int,
+        val experience: Int
+    )
 }
