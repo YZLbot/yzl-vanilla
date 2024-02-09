@@ -9,7 +9,7 @@ import top.tbpdt.utils.MessageUtils.getPlainText
 /**
  * @author Takeoff0518
  */
-object EatDots : SimpleListenerHost() {
+object EatDots: SimpleListenerHost() {
     @EventHandler(priority = EventPriority.HIGH)
     suspend fun GroupMessageEvent.onMessage() {
         val plainText = message.getPlainText().trim()
