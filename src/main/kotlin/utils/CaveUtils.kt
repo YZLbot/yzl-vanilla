@@ -145,6 +145,30 @@ object CaveUtils {
         }
     }
 
+    /**
+     * 查询一个人的所有回声洞
+     */
+    fun loadCaveIds(senderId: Long): List<Int> {
+        val query = """
+        SELECT cave_id FROM cave_comments WHERE sender_id=?
+    """
+
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setLong(1, senderId)
+
+                val resultSet = preparedStatement.executeQuery()
+
+                val caveIds = mutableListOf<Int>()
+                while (resultSet.next()) {
+                    caveIds.add(resultSet.getInt("cave_id"))
+                }
+
+                return caveIds
+            }
+        }
+    }
+
     fun updatePickCount(caveId: Int) {
         val query = "UPDATE cave_comments SET pick_count = pick_count + 1 WHERE cave_id = ?"
 

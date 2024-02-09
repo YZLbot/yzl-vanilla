@@ -9,6 +9,7 @@ import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.emptyMessageChain
 import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.utils.CaveUtils
+import top.tbpdt.utils.CaveUtils.loadCaveIds
 import top.tbpdt.utils.CaveUtils.loadComments
 import top.tbpdt.utils.CaveUtils.replaceExpiredImage
 import top.tbpdt.utils.CaveUtils.updatePickCount
@@ -124,6 +125,24 @@ object Cave : SimpleListenerHost() {
             group.sendMessage("下载中……")
             val (totalCount, successCount) = CaveUtils.downloadAllPictures()
             group.sendMessage("下载结束~\n共向服务器请求 $totalCount 张，成功下载 $successCount 张")
+        }
+        if (message.isCommand("mycave")) {
+            val queryId = message.getRemovedPrefixCommand("mycave").toLongOrNull()
+            if (queryId != null) {
+                val commentIds = loadCaveIds(queryId)
+                if (commentIds.isEmpty()) {
+                    group.sendMessage("ta似乎……还没有投稿过回声洞呢~")
+                } else {
+                    group.sendMessage("ta共投稿了 ${commentIds.size} 条回声洞：\n${commentIds}")
+                }
+                return
+            }
+            val commentIds = loadCaveIds(sender.id)
+            if (commentIds.isEmpty()) {
+                group.sendMessage("你似乎……还没有投稿过回声洞呢~")
+            } else {
+                group.sendMessage("你共投稿了 ${commentIds.size} 条回声洞：\n${commentIds}")
+            }
         }
     }
 }
