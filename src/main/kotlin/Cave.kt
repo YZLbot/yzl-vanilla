@@ -28,6 +28,10 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage("不能添加空信息！")
                 return
             }
+            if (text.toIntOrNull() != null) {
+                group.sendMessage("只输入了数字……是不是要用 .ci 呢？")
+                return
+            }
             val cdTime = CaveUtils.checkInterval()
             if (cdTime != -1L) {
                 group.sendMessage("冷却中，剩余 $cdTime 秒")
