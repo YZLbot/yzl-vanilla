@@ -332,4 +332,24 @@ object CaveUtils {
         val pickCount: Long,
         val date: Date
     )
+
+    private var lastCalledTime = 0L
+    private const val CD_TIME = 40000L
+
+    fun checkInterval(): Long {
+        val currentTime = System.currentTimeMillis()
+        val isFirst = lastCalledTime == 0L
+        return if (isFirst) {
+            lastCalledTime = currentTime
+            -1
+        } else {
+            val elapsedTime = currentTime - lastCalledTime
+            if (elapsedTime < CD_TIME) {
+                (CD_TIME / 1000 - elapsedTime / 1000)
+            } else {
+                lastCalledTime = currentTime
+                -1
+            }
+        }
+    }
 }

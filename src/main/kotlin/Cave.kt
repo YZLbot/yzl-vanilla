@@ -28,6 +28,11 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage("不能添加空信息！")
                 return
             }
+            val cdTime = CaveUtils.checkInterval()
+            if (cdTime != -1L) {
+                group.sendMessage("冷却中，剩余 $cdTime 秒")
+                return
+            }
             val id = CaveUtils.getCommentCount() + 1
             CaveUtils.saveComment(id, text, sender.id, sender.nick, group.id, group.name)
             loadComments(id).first().replaceExpiredImage(group)
