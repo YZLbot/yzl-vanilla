@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "top.tbpdt"
-version = "2.0.3"
+version = "2.0.4"
 
 repositories {
     if (System.getenv("CI")?.toBoolean() != true) {
