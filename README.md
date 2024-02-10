@@ -1,7 +1,8 @@
 # yzl-vanilla
 
 <div align="center">
-  <p><img width="60%" src="https://raw.githubusercontent.com/YZLbot/.github/main/profile/header.png" alt="logo"></p>
+  <p><img width="25%" src=".github/header1.png" alt="logo"></p>
+  <p><img width="20%" src=".github/header2.png" alt="logo"></p>
   <img src="https://img.shields.io/github/last-commit/YZLbot/yzl-vanilla" alt=""/>
   <img src="https://img.shields.io/github/release/YZLbot/yzl-vanilla" alt="latest version" />
   <img src="https://img.shields.io/github/actions/workflow/status/YZLbot/yzl-vanilla/Gradle%20CI.yml?branch=master" alt="Build status"/>
