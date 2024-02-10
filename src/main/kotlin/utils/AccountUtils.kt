@@ -51,7 +51,8 @@ object AccountUtils {
                 val currentDate = Date(currentTimestamp.time)
 
                 preparedStatement.setDate(3, currentDate)
-                preparedStatement.setDate(4, currentDate)
+//                preparedStatement.setDate(4, currentDate)
+                preparedStatement.setDate(4, Date(0))
                 preparedStatement.setLong(5, 0) // total_sign_days
                 preparedStatement.setLong(6, 0) // continuous_sign_days
                 preparedStatement.setLong(7, 0) // money
@@ -81,14 +82,14 @@ object AccountUtils {
     /**
      * 更新签到信息
      */
-    fun updateSign(userId: Long, lastSignDate: Date, totalSignDays: Long, continuousSignDays: Long) {
+    fun updateSign(userId: Long, lastSignDate: Date, totalSignDays: Int, continuousSignDays: Int) {
         val query =
             "UPDATE accounts SET last_sign_date = ?, total_sign_days = ?, continuous_sign_days = ? WHERE user_id = ?"
         DBUtils.connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
                 preparedStatement.setDate(1, lastSignDate)
-                preparedStatement.setLong(2, totalSignDays)
-                preparedStatement.setLong(3, continuousSignDays)
+                preparedStatement.setInt(2, totalSignDays)
+                preparedStatement.setInt(3, continuousSignDays)
                 preparedStatement.setLong(4, userId)
 
                 preparedStatement.executeUpdate()
@@ -147,21 +148,52 @@ object AccountUtils {
     }
 
     /**
+     * 获取两个日期间整的天数
+     */
+    private fun getDaysBetweenDates(date1: Date, date2: Date): Int {
+        val millisecondsPerDay = 24 * 60 * 60 * 1000
+        return ((date2.time - date1.time) / millisecondsPerDay).toInt()
+    }
+
+    /**
      * 签到
      * @return first: 累计时间
      *
      * second: 连续时间
      */
-    /*
     fun sign(userId: Long): Pair<Int, Int> {
-        val lastDate = getSignDate(userId)
-        val nowDate = LocalDate.now()
-        val duration = Duration.between(lastDate.atStartOfDay(), nowDate.atStartOfDay()).toDays()
-        if (duration <= 1) {
-            updateSign(userId,,)
+        val userAccount = queryAccount(userId).first()
+        val nowDate = Date(System.currentTimeMillis())
+        val intervalDays = getDaysBetweenDates(userAccount.lastSignDate, nowDate)
+        return when {
+            intervalDays > 1 -> { // 未能连续签到
+                val updatedTotalSignDays = userAccount.totalSignDays + 1
+                updateSign(
+                    userId,
+                    nowDate,
+                    updatedTotalSignDays,
+                    1
+                )
+                Pair(updatedTotalSignDays, 1)
+            }
+
+            intervalDays == 1 -> { // 连续签到
+                val updatedTotalSignDays = userAccount.totalSignDays + 1
+                val updatedContinuousSignDays = userAccount.continuousSignDays + 1
+                updateSign(
+                    userId,
+                    nowDate,
+                    updatedTotalSignDays,
+                    updatedContinuousSignDays
+                )
+                Pair(updatedContinuousSignDays, updatedContinuousSignDays)
+            }
+
+            else -> { // 当天签到
+                Pair(-1, -1)
+            }
         }
     }
-    */
 
     data class Account(
         val userId: Long,
