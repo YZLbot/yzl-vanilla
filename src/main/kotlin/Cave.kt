@@ -1,5 +1,6 @@
 package top.tbpdt
 
+import configer.CaveConfig
 import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
@@ -7,8 +8,10 @@ import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.ForwardMessageBuilder
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.emptyMessageChain
+import top.tbpdt.PluginMain.save
 import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.utils.CaveUtils
+import top.tbpdt.utils.CaveUtils.getCommentCount
 import top.tbpdt.utils.CaveUtils.loadCaveIds
 import top.tbpdt.utils.CaveUtils.loadComments
 import top.tbpdt.utils.CaveUtils.replaceExpiredImage
@@ -38,13 +41,13 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage("冷却中，剩余 $cdTime 秒")
                 return
             }
-            val id = CaveUtils.getCommentCount() + 1
+            val id = getCommentCount() + 1
             CaveUtils.saveComment(id, text, sender.id, sender.nick, group.id, group.name)
             loadComments(id).first().replaceExpiredImage(group)
             group.sendMessage("回声洞 #${id} 添加成功~")
         }
         if (message.isCommand("cq") || message.isCommand("捡")) {
-            val randomId = (1..CaveUtils.getCommentCount()).random()
+            val randomId = (1..getCommentCount()).filter { it !in CaveConfig.caveBlackList }.random()
             val comment = loadComments(randomId)
             for (i in comment) {
                 /*
@@ -70,8 +73,12 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage("解析失败……参数是不是没有填数字或者是填的不是数字？")
                 return
             }
-            if (id !in 1..CaveUtils.getCommentCount()) {
-                group.sendMessage("你所查询的回声洞不在范围里呢，现在共有${CaveUtils.getCommentCount()}条回声洞~")
+            if (id !in 1..getCommentCount()) {
+                group.sendMessage("你所查询的回声洞不在范围里呢，现在共有${getCommentCount()}条回声洞~")
+                return
+            }
+            if (id in CaveConfig.caveBlackList) {
+                group.sendMessage("该回声洞已被删除！")
                 return
             }
             val comment = loadComments(id)
@@ -94,7 +101,7 @@ object Cave : SimpleListenerHost() {
                 return
             }
             group.sendMessage("查询中，请稍后……")
-            val comment = loadComments(target).sortedBy { it.caveId }
+            val comment = loadComments(target).filter { it.caveId !in CaveConfig.caveBlackList }
             if (comment.isEmpty()) {
                 group.sendMessage("一个也没找到惹……")
                 return
@@ -126,21 +133,38 @@ object Cave : SimpleListenerHost() {
         }
         if (message.isCommand("mycave")) {
             val queryId = message.getRemovedPrefixCommand("mycave").toLongOrNull()
-            if (queryId != null) {
-                val commentIds = loadCaveIds(queryId)
-                if (commentIds.isEmpty()) {
-                    group.sendMessage("ta似乎……还没有投稿过回声洞呢~")
-                } else {
-                    group.sendMessage("ta共投稿了 ${commentIds.size} 条回声洞：\n${commentIds}")
+            val userId = queryId ?: sender.id
+            val commentIds = loadCaveIds(userId)
+            val messagePrefix = if (queryId != null) "ta" else "你"
+            if (commentIds.isEmpty()) {
+                group.sendMessage("${messagePrefix}似乎……还没有投稿过回声洞呢~")
+            } else {
+                val (availableComments, removedComments) = commentIds.partition { it !in CaveConfig.caveBlackList }
+                var result = "${messagePrefix}共有 ${availableComments.size} 条回声洞：\n$availableComments"
+                if (removedComments.isNotEmpty()) {
+                    result += "被删除 ${removedComments.size} 条回声洞：\n$removedComments"
                 }
+                group.sendMessage(result)
+            }
+        }
+        if (message.isCommand("rmcave") && (sender.id in GlobalConfig.admin)) {
+            val queryId = message.getRemovedPrefixCommand("rmcave").toIntOrNull()
+            if (queryId == null) {
+                group.sendMessage("共有 ${CaveConfig.caveBlackList.size} 条删除的回声洞：\n${CaveConfig.caveBlackList}")
                 return
             }
-            val commentIds = loadCaveIds(sender.id)
-            if (commentIds.isEmpty()) {
-                group.sendMessage("你似乎……还没有投稿过回声洞呢~")
-            } else {
-                group.sendMessage("你共投稿了 ${commentIds.size} 条回声洞：\n${commentIds}")
+            if (queryId !in 1..getCommentCount()) {
+                group.sendMessage("你所查询的回声洞不在范围里呢，现在共有${getCommentCount()}条回声洞~")
+                return
             }
+            if (queryId in CaveConfig.caveBlackList) {
+                CaveConfig.caveBlackList.remove(queryId)
+                group.sendMessage("已撤销对回声洞 #$queryId 的删除~")
+            } else {
+                CaveConfig.caveBlackList.add(queryId)
+                group.sendMessage("已删除回声洞 #$queryId ~")
+            }
+            CaveConfig.save()
         }
     }
 }

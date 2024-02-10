@@ -1,6 +1,7 @@
 package top.tbpdt
 
 import EatDots
+import configer.CaveConfig
 import kotlinx.coroutines.cancel
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -32,6 +33,7 @@ object PluginMain : KotlinPlugin(
         AutoConfig.reload()
         EmojiConfig.reload()
         GlobalConfig.reload()
+        CaveConfig.reload()
         logger.info { "正在注册监听器到全局..." }
         EmojiFetch.registerTo(globalEventChannel())
         AdminHandler.registerTo(globalEventChannel())
@@ -49,6 +51,7 @@ object PluginMain : KotlinPlugin(
         AdminHandler.cancel()
         Cave.cancel()
         EatDots.cancel()
+        CaveConfig.save()
         logger.info { "禁用成功！" }
     }
 
