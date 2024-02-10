@@ -55,8 +55,8 @@ object CaveUtils {
 
     fun saveComment(caveId: Int, text: String, senderId: Long, senderNick: String, groupId: Long, groupNick: String) {
         val query = """
-        INSERT INTO cave_comments (cave_id, text, sender_id, sender_nick, group_id, group_nick, date)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO cave_comments (cave_id, text, sender_id, sender_nick, group_id, group_nick, date, pick_count)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """
 
         DBUtils.connectToDB().use { connection ->
@@ -71,6 +71,8 @@ object CaveUtils {
                 val currentTimestamp = Timestamp(System.currentTimeMillis())
                 val currentDate = Date(currentTimestamp.time)
                 preparedStatement.setDate(7, currentDate)
+
+                preparedStatement.setLong(8, 0L)
 
                 preparedStatement.executeUpdate()
             }
@@ -170,7 +172,7 @@ object CaveUtils {
     }
 
     fun updatePickCount(caveId: Int) {
-        val query = "UPDATE cave_comments SET pick_count = pick_count + 1 WHERE cave_id = ?"
+        val query = "UPDATE cave_comments SET pick_count = COALESCE(pick_count, 0) + 1 WHERE cave_id = ?"
 
         DBUtils.connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
