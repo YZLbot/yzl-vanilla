@@ -142,7 +142,7 @@ object Cave : SimpleListenerHost() {
                 val (availableComments, removedComments) = commentIds.partition { it !in CaveConfig.caveBlackList }
                 var result = "${messagePrefix}共有 ${availableComments.size} 条回声洞：\n$availableComments"
                 if (removedComments.isNotEmpty()) {
-                    result += "被删除 ${removedComments.size} 条回声洞：\n$removedComments"
+                    result += "\n被删除 ${removedComments.size} 条回声洞：\n$removedComments"
                 }
                 group.sendMessage(result)
             }
