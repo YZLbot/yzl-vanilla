@@ -40,7 +40,8 @@ object AccountUtils {
     fun initUserAccount(userId: Long, userNick: String) {
         val query = """
         INSERT INTO accounts (user_id, user_nick, encounter_date, last_sign_date, total_sign_days, continuous_sign_days, money, experience)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        SELECT ?, ?, ?, ?, ?, ?, ?, ?
+        WHERE NOT EXISTS (SELECT 1 FROM accounts WHERE user_id = ?)
     """
         DBUtils.connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
@@ -57,6 +58,8 @@ object AccountUtils {
                 preparedStatement.setLong(6, 0) // continuous_sign_days
                 preparedStatement.setLong(7, 0) // money
                 preparedStatement.setLong(8, 0) // experience
+
+                preparedStatement.setLong(9, userId) // for WHERE clause in the SELECT statement
 
                 preparedStatement.executeUpdate()
             }
