@@ -52,8 +52,7 @@ object Cave : SimpleListenerHost() {
 
                     逸一时误一世。
 
-                    --洛雨辰~(1145141919)
-                    at 23/01/16 9:15:20
+                    --洛雨辰~
                  */
                 var result = emptyMessageChain()
                 result += PlainText("回声洞 #${i.caveId}\n\n")
