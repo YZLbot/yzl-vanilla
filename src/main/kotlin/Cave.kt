@@ -58,7 +58,7 @@ object Cave : SimpleListenerHost() {
                 var result = emptyMessageChain()
                 result += PlainText("回声洞 #${i.caveId}\n\n")
                 result += i.replaceExpiredImage(group)
-                result += PlainText("\n\n--${i.senderNick}\n")
+                result += PlainText("\n\n--${i.senderNick}")
                 group.sendMessage(result)
                 updatePickCount(randomId)
             }
