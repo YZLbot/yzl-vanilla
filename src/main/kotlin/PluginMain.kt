@@ -39,6 +39,7 @@ object PluginMain : KotlinPlugin(
         AdminHandler.registerTo(globalEventChannel())
         Cave.registerTo(globalEventChannel())
         EatDots.registerTo(globalEventChannel())
+        Account.registerTo(globalEventChannel())
         logger.info { "正在加载数据库" }
         DBUtils.initCaveDB()
         AccountUtils.createTable()
@@ -51,6 +52,7 @@ object PluginMain : KotlinPlugin(
         AdminHandler.cancel()
         Cave.cancel()
         EatDots.cancel()
+        Account.cancel()
         CaveConfig.save()
         logger.info { "禁用成功！" }
     }

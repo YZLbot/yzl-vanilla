@@ -104,10 +104,25 @@ object AccountUtils {
      * 更新钱数
      */
     fun updateMoney(userId: Long, money: Int) {
-        val query = "UPDATE accounts SET user_nick = ? WHERE user_id = ?"
+        val query = "UPDATE accounts SET money = ? WHERE user_id = ?"
         DBUtils.connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
                 preparedStatement.setInt(1, money)
+                preparedStatement.setLong(2, userId)
+
+                preparedStatement.executeUpdate()
+            }
+        }
+    }
+
+    /**
+     * 更新经验
+     */
+    fun updateExperience(userId: Long, experience: Int) {
+        val query = "UPDATE accounts SET experience = ? WHERE user_id = ?"
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setInt(1, experience)
                 preparedStatement.setLong(2, userId)
 
                 preparedStatement.executeUpdate()
@@ -153,7 +168,7 @@ object AccountUtils {
     /**
      * 获取两个日期间整的天数
      */
-    private fun getDaysBetweenDates(date1: Date, date2: Date): Int {
+    fun getDaysBetweenDates(date1: Date, date2: Date): Int {
         val millisecondsPerDay = 24 * 60 * 60 * 1000
         return ((date2.time - date1.time) / millisecondsPerDay).toInt()
     }
