@@ -169,8 +169,23 @@ object AccountUtils {
      * 获取两个日期间整的天数
      */
     fun getDaysBetweenDates(date1: Date, date2: Date): Int {
-        val millisecondsPerDay = 24 * 60 * 60 * 1000
-        return ((date2.time - date1.time) / millisecondsPerDay).toInt()
+        val millisPerDay = 24 * 60 * 60 * 1000
+
+        val utilDate1 = java.util.Date(date1.time)
+        val utilDate2 = java.util.Date(date2.time)
+
+        utilDate1.hours = 0
+        utilDate1.minutes = 0
+        utilDate1.seconds = 0
+        utilDate1.time = utilDate1.time / millisPerDay * millisPerDay
+
+        utilDate2.hours = 0
+        utilDate2.minutes = 0
+        utilDate2.seconds = 0
+        utilDate2.time = utilDate2.time / millisPerDay * millisPerDay
+
+        val diff = utilDate2.time - utilDate1.time
+        return (diff / millisPerDay).toInt()
     }
 
     /**
