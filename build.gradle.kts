@@ -32,4 +32,7 @@ dependencies {
     testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("org.xerial:sqlite-jdbc:3.41.2.2")
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation("junit:junit:4.13.2")
 }
