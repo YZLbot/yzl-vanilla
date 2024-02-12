@@ -37,4 +37,26 @@ object MessageUtils {
         if (!this.isCommand(prefix)) return ""
         return this.serializeToMiraiCode().removePrefix(GlobalConfig.commandPrefix + prefix).trim()
     }
+
+    fun String.parseCommand(): List<String> {
+        val parts = mutableListOf<String>()
+        var currentPart = ""
+        var inQuotes = false
+        for (char in this) {
+            when {
+                char.isWhitespace() && !inQuotes ->
+                    if (currentPart.isNotEmpty()) {
+                        parts.add(currentPart)
+                        currentPart = ""
+                    }
+                char == '"' -> inQuotes = !inQuotes
+                else -> currentPart += char
+            }
+        }
+        if (currentPart.isNotEmpty()) {
+            parts.add(currentPart)
+        }
+        return parts
+    }
+
 }
