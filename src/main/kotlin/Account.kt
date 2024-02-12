@@ -40,7 +40,7 @@ object Account : SimpleListenerHost() {
             group.sendMessage(message.quote() + result)
         }
         if (message.isCommand("sign")) {
-            initUserAccount(sender.id, sender.nameCard)
+            initUserAccount(sender.id, sender.nick)
             val (totalSignDays, continuousSignDays) = sign(sender.id)
             if (totalSignDays == -1) {
                 group.sendMessage(message.quote() + "你今天已经签到过了，请明天再来签到~")
