@@ -1,6 +1,7 @@
 package top.tbpdt.utils
 
 import net.mamoe.mirai.contact.User
+import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.PlainText
 import top.tbpdt.configer.GlobalConfig
@@ -59,4 +60,7 @@ object MessageUtils {
         return parts
     }
 
+    fun GroupMessageEvent.checkMutePermission(): Boolean {
+        return sender.permission.level < group.botPermission.level
+    }
 }

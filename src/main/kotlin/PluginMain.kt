@@ -1,6 +1,7 @@
 package top.tbpdt
 
 import EatDots
+import MuteMe
 import configer.CaveConfig
 import kotlinx.coroutines.cancel
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
@@ -11,6 +12,7 @@ import net.mamoe.mirai.utils.info
 import top.tbpdt.configer.AutoConfig
 import top.tbpdt.configer.EmojiConfig
 import top.tbpdt.configer.GlobalConfig
+import top.tbpdt.configer.MuteMeConfig
 import top.tbpdt.utils.AccountUtils
 import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.DBUtils
@@ -34,12 +36,14 @@ object PluginMain : KotlinPlugin(
         EmojiConfig.reload()
         GlobalConfig.reload()
         CaveConfig.reload()
+        MuteMeConfig.reload()
         logger.info { "正在注册监听器到全局..." }
         EmojiFetch.registerTo(globalEventChannel())
         AdminHandler.registerTo(globalEventChannel())
         Cave.registerTo(globalEventChannel())
         EatDots.registerTo(globalEventChannel())
         Account.registerTo(globalEventChannel())
+        MuteMe.registerTo(globalEventChannel())
         logger.info { "正在加载数据库" }
         DBUtils.initCaveDB()
         AccountUtils.createTable()
@@ -54,6 +58,7 @@ object PluginMain : KotlinPlugin(
         EatDots.cancel()
         Account.cancel()
         CaveConfig.save()
+        MuteMe.cancel()
         logger.info { "禁用成功！" }
     }
 
