@@ -1,6 +1,7 @@
 package top.tbpdt
 
 import configer.CaveConfig
+import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
@@ -147,24 +148,43 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage(result)
             }
         }
-        if (message.isCommand("rmcave") && (sender.id in GlobalConfig.admin)) {
+        if (message.isCommand("rmcave")) {
             val queryId = message.getRemovedPrefixCommand("rmcave").toIntOrNull()
-            if (queryId == null) {
-                group.sendMessage("共有 ${CaveConfig.caveBlackList.size} 条删除的回声洞：\n${CaveConfig.caveBlackList}")
-                return
-            }
-            if (queryId !in 1..getCommentCount()) {
-                group.sendMessage("你所查询的回声洞不在范围里呢，现在共有${getCommentCount()}条回声洞~")
-                return
-            }
-            if (queryId in CaveConfig.caveBlackList) {
-                CaveConfig.caveBlackList.remove(queryId)
-                group.sendMessage("已撤销对回声洞 #$queryId 的删除~")
+            if (sender.id in GlobalConfig.admin) {
+                if (queryId == null) {
+                    group.sendMessage("共有 ${CaveConfig.caveBlackList.size} 条删除的回声洞：\n${CaveConfig.caveBlackList}")
+                    return
+                }
+                if (queryId !in 1..getCommentCount()) {
+                    group.sendMessage("你所查询的回声洞不在范围里呢，现在共有${getCommentCount()}条回声洞~")
+                    return
+                }
+                removeCave(queryId, group)
             } else {
-                CaveConfig.caveBlackList.add(queryId)
-                group.sendMessage("已删除回声洞 #$queryId ~")
+                if (queryId == null) {
+                    return
+                }
+                if (queryId !in 1..getCommentCount()) {
+                    group.sendMessage("你所查询的回声洞不在范围里呢，现在共有${getCommentCount()}条回声洞~")
+                    return
+                }
+                if (loadComments(queryId).first().senderId == sender.id) {
+                    removeCave(queryId, group)
+                } else {
+                    group.sendMessage("移除失败，请通过 .mycave 查看自己投稿过的回声洞哦~")
+                }
             }
-            CaveConfig.save()
         }
+    }
+
+    private suspend fun removeCave(queryId: Int, group: Group) {
+        if (queryId in CaveConfig.caveBlackList) {
+            CaveConfig.caveBlackList.remove(queryId)
+            group.sendMessage("已撤销对回声洞 #$queryId 的删除~")
+        } else {
+            CaveConfig.caveBlackList.add(queryId)
+            group.sendMessage("已删除回声洞 #$queryId ~")
+        }
+        CaveConfig.save()
     }
 }
