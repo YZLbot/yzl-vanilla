@@ -295,21 +295,30 @@ object CaveUtils {
                 if (isHttpFileExists(i.queryUrl())) {
                     result += i
                     if (!File("$picPath${getFileName(i.queryUrl())}").exists()) {
+                        logger.info("发现未下载的图片，正在下载：${i.queryUrl()}")
                         downloadAndSaveImage(i.queryUrl())
+                        logger.info("下载成功，文件名：${getFileName(i.queryUrl())}")
                     }
                 } else {
+                    logger.warning("图片已过期：${i.queryUrl()}")
                     val updatedImage: Image
                     val imageFile =
                         File("$picPath${getFileName(i.queryUrl())}")
                     if (imageFile.exists()) {
+                        logger.info("本地已存在该图片（${imageFile.name}），正在尝试上传")
                         imageFile.toExternalResource().use { resource ->
                             updatedImage = contact.uploadImage(resource)
                         }
+                        logger.info("图片上传成功！文件名：${updatedImage.queryUrl()}")
                         result += updatedImage
+                        logger.info("尝试重命名中……")
                         if (!imageFile.renameTo(File("$picPath${getFileName(updatedImage.queryUrl())}"))) {
                             logger.warning("文件重命名失败！")
+                        } else {
+                            logger.info("已重命名为：${getFileName(updatedImage.queryUrl())}")
                         }
                     } else {
+                        logger.warning("本地未找到该图片，标记为已过期")
                         result += " [过期的图片] "
                     }
                 }
