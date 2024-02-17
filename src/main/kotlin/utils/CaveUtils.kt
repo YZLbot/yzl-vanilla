@@ -282,6 +282,7 @@ object CaveUtils {
     suspend fun Comment.replaceExpiredImage(contact: Contact): MessageChain {
         val message = text.deserializeMiraiCode()
         var result = emptyMessageChain()
+        logger.info("检查图片中，语境：${contact}")
         for (i in message) {
             /*
             tx 的 imageId 规则已改变：
@@ -298,6 +299,8 @@ object CaveUtils {
                         logger.info("发现未下载的图片，正在下载：${i.queryUrl()}")
                         downloadAndSaveImage(i.queryUrl())
                         logger.info("下载成功，文件名：${getFileName(i.queryUrl())}")
+                    } else {
+                        logger.info("图片 ${getFileName(i.queryUrl())} 存在于本地，地址：${i.queryUrl()}")
                     }
                 } else {
                     logger.warning("图片已过期：${i.queryUrl()}")
@@ -309,13 +312,13 @@ object CaveUtils {
                         imageFile.toExternalResource().use { resource ->
                             updatedImage = contact.uploadImage(resource)
                         }
-                        logger.info("图片上传成功！文件名：${updatedImage.queryUrl()}")
+                        logger.info("图片上传成功！地址：${updatedImage.queryUrl()}")
                         result += updatedImage
                         logger.info("尝试重命名中……")
                         if (!imageFile.renameTo(File("$picPath${getFileName(updatedImage.queryUrl())}"))) {
                             logger.warning("文件重命名失败！")
                         } else {
-                            logger.info("已重命名为：${getFileName(updatedImage.queryUrl())}")
+                            logger.info("已重命名为：${imageFile.name}")
                         }
                     } else {
                         logger.warning("本地未找到该图片，标记为已过期")
