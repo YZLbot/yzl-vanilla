@@ -192,6 +192,7 @@ object Cave : SimpleListenerHost() {
             CaveConfig.caveBlackList.add(queryId)
             group.sendMessage("已删除回声洞 #$queryId ~")
         }
+        CaveConfig.caveBlackList.sorted()
         CaveConfig.save()
     }
 }
