@@ -110,6 +110,7 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage("一个也没找到惹……")
                 return
             }
+            comment.sortedBy { it.caveId }
             group.sendMessage(
                 "共计：${comment.size}\n${
                     comment.map { it.caveId }.filter { it !in CaveConfig.caveBlackList }
