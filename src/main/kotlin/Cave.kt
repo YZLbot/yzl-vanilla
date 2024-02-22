@@ -7,6 +7,7 @@ import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.ForwardMessageBuilder
+import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.emptyMessageChain
 import top.tbpdt.PluginMain.save
@@ -35,6 +36,10 @@ object Cave : SimpleListenerHost() {
             }
             if (text.toIntOrNull() != null) {
                 group.sendMessage("只输入了数字……是不是要用 .ci 呢？")
+                return
+            }
+            if (message.any { it is Image }) {
+                group.sendMessage("由于技术原因，暂不支持图片的投稿哦~")
                 return
             }
             val cdTime = CaveUtils.checkInterval()
