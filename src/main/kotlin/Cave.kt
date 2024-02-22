@@ -72,10 +72,8 @@ object Cave : SimpleListenerHost() {
             }
         }
         if (message.isCommand("ci")) {
-            val id: Int
-            try {
-                id = message.getRemovedPrefixCommand("ci").toInt()
-            } catch (e: NumberFormatException) {
+            val id = message.getRemovedPrefixCommand("ci").toIntOrNull()
+            if (id == null) {
                 group.sendMessage("解析失败……参数是不是没有填数字或者是填的不是数字？")
                 return
             }
