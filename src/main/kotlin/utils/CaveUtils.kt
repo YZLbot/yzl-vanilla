@@ -306,8 +306,8 @@ object CaveUtils {
                     logger.warning("图片已过期：${i.queryUrl()}")
                     val updatedImage: Image
                     val imageFile =
-                        File("$picPath${getFileName(i.queryUrl())}")
-                    if (imageFile.exists()) {
+                        File(picPath).listFiles()?.find { it.nameWithoutExtension == getSHA256(i.queryUrl()) }
+                    if (imageFile != null) {
                         logger.info("本地已存在该图片（${imageFile.name}），正在尝试上传")
                         imageFile.toExternalResource().use { resource ->
                             updatedImage = contact.uploadImage(resource)
