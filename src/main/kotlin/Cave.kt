@@ -110,7 +110,11 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage("一个也没找到惹……")
                 return
             }
-            group.sendMessage("共计：${comment.size}")
+            group.sendMessage(
+                "共计：${comment.size}\n${
+                    comment.map { it.caveId }.filter { it !in CaveConfig.caveBlackList }
+                }"
+            )
             val forwardResult = ForwardMessageBuilder(group)
             for (i in comment) {
                 var result = emptyMessageChain()
