@@ -28,6 +28,7 @@ mirai {
 
 dependencies {
     val overflowVersion = "2.16.0+"
+    val ktorVersion = "2.3.8"
     compileOnly("top.mrxiaom:overflow-core-api:$overflowVersion")
     testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
@@ -35,4 +36,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation("junit:junit:4.13.2")
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-json:$ktorVersion")
+    implementation("io.ktor:ktor-client-serialization:$ktorVersion")
 }
