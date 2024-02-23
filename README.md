@@ -28,11 +28,11 @@ For the good of the community as a whole, we strongly recommend that you do the 
 
 ## TODO List
 
-- [ ] 签到
-- [ ] 经济系统
-- [ ] 命令解析系统
-- [ ] 经验系统
-- [ ] 称呼
+- [x] 签到
+- [x] 经济系统
+- [x] 命令解析系统
+- [x] 经验系统
+- [x] 称呼
 - [ ] 抽签
 - [ ] 自动回复
   - [ ] 正则
@@ -52,21 +52,21 @@ For the good of the community as a whole, we strongly recommend that you do the 
 - [ ] 天气查询
 - [ ] 响应黑名单
 - [ ] 抽老婆
-- [ ] 回声洞
+- [x] 回声洞
   - [x] 数据库存储
   - [x] 图片存储
   - [x] 按序号查询
-  - [ ] 范围查询
+  - [ ] ~~范围查询~~
   - [x] 搜索
-- [ ] 偷图
+- [ ] ~~偷图~~
 - [ ] Bilibili 动态推送
 - [ ] 百科查询
 - [ ] 点歌
   - [ ] 网易云
   - [ ] QQ 音乐
   - [ ] 语音发送
-- [ ] 一言
-- [ ] 自己禁言自己
+- [x] 一言
+- [x] 自己禁言自己
 - [ ] 图片生成（petpet）
 - [ ] MC 服务器信息查询
 - [ ] MC 服务器管理（chatsync）
