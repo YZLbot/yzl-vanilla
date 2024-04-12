@@ -1,6 +1,7 @@
 package top.tbpdt
 
 import EatDots
+import InviteProcessor
 import MuteMe
 import configer.CaveConfig
 import kotlinx.coroutines.cancel
@@ -44,6 +45,7 @@ object PluginMain : KotlinPlugin(
         EatDots.registerTo(globalEventChannel())
         Account.registerTo(globalEventChannel())
         MuteMe.registerTo(globalEventChannel())
+        InviteProcessor.registerTo(globalEventChannel())
         logger.info { "正在加载数据库" }
         DBUtils.initCaveDB()
         AccountUtils.createTable()
@@ -59,6 +61,7 @@ object PluginMain : KotlinPlugin(
         Account.cancel()
         CaveConfig.save()
         MuteMe.cancel()
+        InviteProcessor.cancel()
         logger.info { "禁用成功！" }
     }
 

@@ -26,4 +26,25 @@ object GlobalConfig : AutoSavePluginConfig("Config") {
             1234L,
         )
     )
+
+    @ValueDescription(
+        """
+        大本营群号
+        """
+    )
+    val group: Long by value(758502512L)
+
+    @ValueDescription(
+        """
+        自动同意拉拉群
+        """
+    )
+    val autoAcceptInvitedJoinGroupRequest: Boolean by value(true)
+
+    @ValueDescription(
+        """
+        自动同意加好友
+        """
+    )
+    val autoAcceptNewFriendRequest: Boolean by value(true)
 }

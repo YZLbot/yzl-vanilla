@@ -15,7 +15,7 @@ import top.tbpdt.utils.MessageUtils.getPlainText
  */
 object AdminHandler : SimpleListenerHost() {
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGHEST)
     suspend fun MessageEvent.reloadHandle() {
         if (sender.id !in GlobalConfig.admin) return
         if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}.reload")) {
