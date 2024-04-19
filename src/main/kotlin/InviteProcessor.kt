@@ -1,3 +1,4 @@
+import kotlinx.coroutines.delay
 import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
@@ -15,6 +16,7 @@ object InviteProcessor : SimpleListenerHost() {
             bot.getGroup(GlobalConfig.group)?.sendMessage("按照配置，已回绝加好友请求：\n$this")
             return
         }
+        delay((1000L..5000L).random())
         accept()
         bot.getGroup(GlobalConfig.group)?.sendMessage("已同意加好友请求：\n$this")
     }
@@ -27,6 +29,7 @@ object InviteProcessor : SimpleListenerHost() {
         }
         val group = bot.getGroup(GlobalConfig.group)
         if (group != null && invitorId in group.members) {
+            delay((1000L..5000L).random())
             accept()
             bot.getGroup(GlobalConfig.group)?.sendMessage("已同意拉群请求：\n$this")
         } else if (invitorId in bot.friends) {
