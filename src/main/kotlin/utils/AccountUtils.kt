@@ -115,6 +115,33 @@ object AccountUtils {
         }
     }
 
+    fun addMoney(userId: Long, delta: Int): Boolean {
+        val query = "UPDATE accounts SET money = money + ? WHERE user_id = ?"
+        val selectQuery = "SELECT money FROM accounts WHERE user_id = ?"
+        var success = false
+
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(selectQuery).use { selectStatement ->
+                selectStatement.setLong(1, userId)
+                val resultSet = selectStatement.executeQuery()
+
+                if (resultSet.next()) {
+                    val currentMoney = resultSet.getInt("money")
+                    if (currentMoney + delta >= 0) {
+                        connection.prepareStatement(query).use { preparedStatement ->
+                            preparedStatement.setInt(1, delta)
+                            preparedStatement.setLong(2, userId)
+                            preparedStatement.executeUpdate()
+                            success = true
+                        }
+                    }
+                }
+            }
+        }
+        return success
+    }
+
+
     /**
      * 更新经验
      */
@@ -163,6 +190,40 @@ object AccountUtils {
                 }.toList()
             }
         }
+    }
+
+    fun queryMoney(userId: Long): Int {
+        val query = "SELECT money FROM accounts WHERE user_id = ?"
+        var money = 0
+
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setLong(1, userId)
+                val resultSet = preparedStatement.executeQuery()
+
+                if (resultSet.next()) {
+                    money = resultSet.getInt("money")
+                }
+            }
+        }
+        return money
+    }
+
+    fun queryExperience(userId: Long): Int {
+        val query = "SELECT experience FROM accounts WHERE user_id = ?"
+        var experience = 0
+
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setLong(1, userId)
+                val resultSet = preparedStatement.executeQuery()
+
+                if (resultSet.next()) {
+                    experience = resultSet.getInt("experience")
+                }
+            }
+        }
+        return experience
     }
 
     /**

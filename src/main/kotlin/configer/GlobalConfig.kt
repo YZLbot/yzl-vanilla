@@ -47,4 +47,18 @@ object GlobalConfig : AutoSavePluginConfig("Config") {
         """
     )
     val autoAcceptNewFriendRequest: Boolean by value(true)
+
+    @ValueDescription(
+        """
+        加好友、拉群经验限制
+        """
+    )
+    val experienceLimit: Int by value(100)
+
+    @ValueDescription(
+        """
+        拉群消耗经济
+        """
+    )
+    val moneyLimit: Int by value(100)
 }
