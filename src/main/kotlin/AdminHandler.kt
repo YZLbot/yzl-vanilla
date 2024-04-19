@@ -8,7 +8,7 @@ import top.tbpdt.PluginMain.reload
 import top.tbpdt.configer.AutoConfig
 import top.tbpdt.configer.EmojiConfig
 import top.tbpdt.configer.GlobalConfig
-import top.tbpdt.utils.MessageUtils.getPlainText
+import top.tbpdt.utils.MessageUtils.isCommand
 
 /**
  * @author Takeoff0518
@@ -18,7 +18,7 @@ object AdminHandler : SimpleListenerHost() {
     @EventHandler(priority = EventPriority.HIGHEST)
     suspend fun MessageEvent.reloadHandle() {
         if (sender.id !in GlobalConfig.admin) return
-        if (message.getPlainText().startsWith("${GlobalConfig.commandPrefix}.reload")) {
+        if (message.isCommand("reload")) {
             try {
                 AutoConfig.reload()
                 EmojiConfig.reload()
