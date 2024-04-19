@@ -219,7 +219,7 @@ object AccountUtils {
                     updatedTotalSignDays,
                     updatedContinuousSignDays
                 )
-                Pair(updatedContinuousSignDays, updatedContinuousSignDays)
+                Pair(updatedTotalSignDays, updatedContinuousSignDays)
             }
 
             else -> { // 当天签到
