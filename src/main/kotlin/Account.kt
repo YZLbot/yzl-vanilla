@@ -13,6 +13,7 @@ import top.tbpdt.utils.AccountUtils.sign
 import top.tbpdt.utils.AccountUtils.updateExperience
 import top.tbpdt.utils.AccountUtils.updateMoney
 import top.tbpdt.utils.AccountUtils.updateNick
+import top.tbpdt.utils.MessageUtils.getPlainText
 import top.tbpdt.utils.MessageUtils.getRemovedPrefixCommand
 import top.tbpdt.utils.MessageUtils.isCommand
 import java.sql.Date
@@ -43,7 +44,7 @@ object Account : SimpleListenerHost() {
                     "——${hitokoto.fromWho ?: ""}${if (hitokoto.from == hitokoto.fromWho) "" else "《" + hitokoto.from + "》"}"
             group.sendMessage(message.quote() + result)
         }
-        if (message.isCommand("sign")) {
+        if (message.isCommand("sign") || message.getPlainText().trim().startsWith("签到")) {
             initUserAccount(sender.id, sender.nick)
             val (totalSignDays, continuousSignDays) = sign(sender.id)
             if (totalSignDays == -1) {
