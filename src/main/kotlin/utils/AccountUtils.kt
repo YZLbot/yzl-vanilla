@@ -115,6 +115,12 @@ object AccountUtils {
         }
     }
 
+
+    /**
+     * 添加钱数
+     * @param delta 钱数增减，可为负数
+     * @return 若修改成功返回 `true`，否则（透支）返回 `false`
+     */
     fun addMoney(userId: Long, delta: Int): Boolean {
         val query = "UPDATE accounts SET money = money + ? WHERE user_id = ?"
         val selectQuery = "SELECT money FROM accounts WHERE user_id = ?"
@@ -192,6 +198,9 @@ object AccountUtils {
         }
     }
 
+    /**
+     * 获取钱数
+     */
     fun queryMoney(userId: Long): Int {
         val query = "SELECT money FROM accounts WHERE user_id = ?"
         var money = 0
@@ -209,6 +218,9 @@ object AccountUtils {
         return money
     }
 
+    /**
+     * 获取经验
+     */
     fun queryExperience(userId: Long): Int {
         val query = "SELECT experience FROM accounts WHERE user_id = ?"
         var experience = 0
