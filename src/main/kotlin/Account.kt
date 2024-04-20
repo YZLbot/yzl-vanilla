@@ -85,30 +85,30 @@ object Account : SimpleListenerHost() {
             group.sendMessage(At(sender) + "好吧，现在阿绫叫你 $nick 啦~")
         }
         if (message.isCommand("rank money")) {
-            //     123456789A 123456789A 123456
             var result = """
-                |# QQ         昵称       li
-                |--------------------------------
+                |#  li    昵称(QQ)
+                |
             """.trimMargin()
             val rank = queryMoneyRank()
             rank.forEachIndexed { index, element ->
-                result += index.toString().padEnd(11) +
-                        element.userNick.padEnd(11) +
-                        element.money + "\n"
+                result += (index + 1).toString().padEnd(3) +
+                        element.money.toString().padEnd(6) +
+                        element.userNick +
+                        "(" + element.userId + ")\n"
             }
             group.sendMessage(result)
         }
         if (message.isCommand("rank exp")) {
-            //     123456789A 123456789A 123456
             var result = """
-                |# QQ         昵称       经验
-                |--------------------------------
+                |#  经验  昵称(QQ)
+                |
             """.trimMargin()
             val rank = queryExperienceRank()
             rank.forEachIndexed { index, element ->
-                result += index.toString().padEnd(11) +
-                        element.userNick.padEnd(11) +
-                        element.experience + "\n"
+                result += (index + 1).toString().padEnd(3) +
+                        element.experience.toString().padEnd(6) +
+                        element.userNick +
+                        "(" + element.userId + ")\n"
             }
             group.sendMessage(result)
         }
