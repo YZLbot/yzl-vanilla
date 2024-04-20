@@ -4,8 +4,11 @@ import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
 import net.mamoe.mirai.event.events.GroupMessageEvent
+import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
+import top.tbpdt.configer.GlobalConfig
+import top.tbpdt.utils.AccountUtils.addMoney
 import top.tbpdt.utils.AccountUtils.getDaysBetweenDates
 import top.tbpdt.utils.AccountUtils.initUserAccount
 import top.tbpdt.utils.AccountUtils.queryAccount
@@ -16,6 +19,7 @@ import top.tbpdt.utils.AccountUtils.updateNick
 import top.tbpdt.utils.MessageUtils.getPlainText
 import top.tbpdt.utils.MessageUtils.getRemovedPrefixCommand
 import top.tbpdt.utils.MessageUtils.isCommand
+import top.tbpdt.utils.MessageUtils.parseCommand
 import java.sql.Date
 
 /**
@@ -77,4 +81,58 @@ object Account : SimpleListenerHost() {
             group.sendMessage(At(sender) + "好吧，现在阿绫叫你 $nick 啦~")
         }
     }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    suspend fun MessageEvent.adminHandle() {
+        if (sender.id !in GlobalConfig.admin) return
+        if (message.isCommand("money set")) {
+            val arguments = message.getRemovedPrefixCommand("money set").parseCommand()
+            if (arguments.size != 2) {
+                subject.sendMessage("参数个数不匹配，应为 [被操作者QQ号] [钱数]！")
+                return
+            }
+            val userId = arguments[0].toLongOrNull()
+            val money = arguments[1].toIntOrNull()
+            if (userId == null || money == null) {
+                subject.sendMessage("参数类型不匹配，应为 [长整数] [整数]！")
+                return
+            }
+            initUserAccount(userId, "[未指定]")
+            updateMoney(userId, money)
+            subject.sendMessage("已为 $userId 修改钱数 为 $money li~")
+        }
+        if (message.isCommand("money add")) {
+            val arguments = message.getRemovedPrefixCommand("money add").parseCommand()
+            if (arguments.size != 2) {
+                subject.sendMessage("参数个数不匹配，应为 [被操作者QQ号] [钱数增量]！")
+                return
+            }
+            val userId = arguments[0].toLongOrNull()
+            val delta = arguments[1].toIntOrNull()
+            if (userId == null || delta == null) {
+                subject.sendMessage("参数类型不匹配，应为 [长整数] [整数]！")
+                return
+            }
+            initUserAccount(userId, "[未指定]")
+            addMoney(userId, delta)
+            subject.sendMessage("已为 $userId 增减钱数 $delta li~")
+        }
+        if (message.isCommand("exp set")) {
+            val arguments = message.getRemovedPrefixCommand("exp set").parseCommand()
+            if (arguments.size != 2) {
+                subject.sendMessage("参数个数不匹配，应为 [被操作者QQ号] [经验]！")
+                return
+            }
+            val userId = arguments[0].toLongOrNull()
+            val experience = arguments[1].toIntOrNull()
+            if (userId == null || experience == null) {
+                subject.sendMessage("参数类型不匹配，应为 [长整数] [整数]！")
+                return
+            }
+            initUserAccount(userId, "[未指定]")
+            updateExperience(userId, experience)
+            subject.sendMessage("已为 $userId 修改经验 为 $experience ~")
+        }
+    }
+
 }
