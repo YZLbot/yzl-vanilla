@@ -66,6 +66,20 @@ object AccountUtils {
         }
     }
 
+    /**
+     * 判断指定的用户是否存在于表中
+     */
+    fun isUserExist(userId: Long): Boolean {
+        val query = "SELECT 1 FROM accounts WHERE user_id = ? LIMIT 1"
+
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setLong(1, userId)
+                val resultSet = preparedStatement.executeQuery()
+                return resultSet.next()
+            }
+        }
+    }
 
     /**
      * 更新昵称信息
@@ -80,6 +94,26 @@ object AccountUtils {
                 preparedStatement.executeUpdate()
             }
         }
+    }
+
+    /**
+     * 获取昵称信息
+     */
+    fun queryNick(userId: Long): String {
+        val query = "SELECT user_nick FROM accounts WHERE user_id = ?"
+        var nick = ""
+
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setLong(1, userId)
+                val resultSet = preparedStatement.executeQuery()
+
+                if (resultSet.next()) {
+                    nick = resultSet.getString("user_nick")
+                }
+            }
+        }
+        return nick
     }
 
     /**

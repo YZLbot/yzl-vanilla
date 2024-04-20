@@ -11,7 +11,9 @@ import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.utils.AccountUtils.addMoney
 import top.tbpdt.utils.AccountUtils.getDaysBetweenDates
 import top.tbpdt.utils.AccountUtils.initUserAccount
+import top.tbpdt.utils.AccountUtils.isUserExist
 import top.tbpdt.utils.AccountUtils.queryAccount
+import top.tbpdt.utils.AccountUtils.queryNick
 import top.tbpdt.utils.AccountUtils.sign
 import top.tbpdt.utils.AccountUtils.updateExperience
 import top.tbpdt.utils.AccountUtils.updateMoney
@@ -97,7 +99,9 @@ object Account : SimpleListenerHost() {
                 subject.sendMessage("参数类型不匹配，应为 [长整数] [整数]！")
                 return
             }
-            initUserAccount(userId, "[未指定]")
+            if (!isUserExist(sender.id)) {
+                initUserAccount(userId, "[未指定]")
+            }
             updateMoney(userId, money)
             subject.sendMessage("已为 $userId 修改钱数 为 $money li~")
         }
@@ -113,7 +117,9 @@ object Account : SimpleListenerHost() {
                 subject.sendMessage("参数类型不匹配，应为 [长整数] [整数]！")
                 return
             }
-            initUserAccount(userId, "[未指定]")
+            if (!isUserExist(sender.id)) {
+                initUserAccount(userId, "[未指定]")
+            }
             addMoney(userId, delta)
             subject.sendMessage("已为 $userId 增减钱数 $delta li~")
         }
@@ -129,9 +135,25 @@ object Account : SimpleListenerHost() {
                 subject.sendMessage("参数类型不匹配，应为 [长整数] [整数]！")
                 return
             }
-            initUserAccount(userId, "[未指定]")
+            if (!isUserExist(sender.id)) {
+                initUserAccount(userId, "[未指定]")
+            }
             updateExperience(userId, experience)
             subject.sendMessage("已为 $userId 修改经验 为 $experience ~")
+        }
+    }
+
+    /**
+     * 修复缺失的昵称问题
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    suspend fun GroupMessageEvent.spyHandle() {
+        if (!isUserExist(sender.id)) {
+            initUserAccount(sender.id, senderName)
+            return
+        }
+        if (queryNick(sender.id).trim() == "" || queryNick(sender.id).trim() == "[未指定]") {
+            updateNick(sender.id, senderName)
         }
     }
 
