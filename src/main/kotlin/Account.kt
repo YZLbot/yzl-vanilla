@@ -13,6 +13,8 @@ import top.tbpdt.utils.AccountUtils.getDaysBetweenDates
 import top.tbpdt.utils.AccountUtils.initUserAccount
 import top.tbpdt.utils.AccountUtils.isUserExist
 import top.tbpdt.utils.AccountUtils.queryAccount
+import top.tbpdt.utils.AccountUtils.queryExperienceRank
+import top.tbpdt.utils.AccountUtils.queryMoneyRank
 import top.tbpdt.utils.AccountUtils.queryNick
 import top.tbpdt.utils.AccountUtils.sign
 import top.tbpdt.utils.AccountUtils.updateExperience
@@ -81,6 +83,34 @@ object Account : SimpleListenerHost() {
             }
             updateNick(sender.id, nick)
             group.sendMessage(At(sender) + "好吧，现在阿绫叫你 $nick 啦~")
+        }
+        if (message.isCommand("rank money")) {
+            //     123456789A 123456789A 123456
+            var result = """
+                |# QQ         昵称       li
+                |--------------------------------
+            """.trimMargin()
+            val rank = queryMoneyRank()
+            rank.forEachIndexed { index, element ->
+                result += index.toString().padEnd(11) +
+                        element.userNick.padEnd(11) +
+                        element.money + "\n"
+            }
+            group.sendMessage(result)
+        }
+        if (message.isCommand("rank exp")) {
+            //     123456789A 123456789A 123456
+            var result = """
+                |# QQ         昵称       经验
+                |--------------------------------
+            """.trimMargin()
+            val rank = queryExperienceRank()
+            rank.forEachIndexed { index, element ->
+                result += index.toString().padEnd(11) +
+                        element.userNick.padEnd(11) +
+                        element.experience + "\n"
+            }
+            group.sendMessage(result)
         }
     }
 
