@@ -58,6 +58,18 @@ object DBUtils {
                     )
                     """
                 )
+
+                // name 包括文件后缀
+                createTable(
+                    connection,
+                    """
+                    CREATE TABLE IF NOT EXISTS cave_pics (
+                        name TEXT,
+                        url TEXT,
+                        PRIMARY KEY (name)
+                    )
+                    """
+                )
             }
         } catch (e: SQLException) {
             logger.error("数据库创建失败: $e")

@@ -51,6 +51,20 @@ object CaveUtils {
             )
         }
         logger.info("已尝试创建数据表 cave_comments")
+
+        DBUtils.connectToDB().use { connection ->
+            DBUtils.createTable(
+                connection,
+                """
+                    CREATE TABLE IF NOT EXISTS cave_pics (
+                        name TEXT,
+                        url TEXT,
+                        PRIMARY KEY (name)
+                    )
+                    """
+            )
+        }
+        logger.info("已尝试创建数据表 cave_pics")
     }
 
     fun saveComment(caveId: Int, text: String, senderId: Long, senderNick: String, groupId: Long, groupNick: String) {
@@ -293,33 +307,33 @@ object CaveUtils {
              */
 //                if (i.isUploaded(bot)) {
             if (i is Image) {
+                val url = i.queryUrl()
+                val name = getFileName(i.queryUrl())
                 if (isHttpFileExists(i.queryUrl())) {
                     result += i
-                    if (!File("$picPath${getFileName(i.queryUrl())}").exists()) {
-                        logger.info("发现未下载的图片，正在下载：${i.queryUrl()}")
-                        downloadAndSaveImage(i.queryUrl())
-                        logger.info("下载成功，文件名：${getFileName(i.queryUrl())}")
+                    if (!isPicExists(url)) {
+                        logger.info("发现未下载的图片，正在下载：$url")
+                        downloadAndSaveImage(url)
+                        addPicture(name, url)
+                        logger.info("下载成功，文件名：$name")
                     } else {
-                        logger.info("图片 ${getFileName(i.queryUrl())} 存在于本地，地址：${i.queryUrl()}")
+                        logger.info("图片 $name 存在于本地，地址：$url")
                     }
                 } else {
-                    logger.warning("图片已过期：${i.queryUrl()}")
+                    logger.warning("图片已过期：$url")
                     val updatedImage: Image
-                    val imageFile =
-                        File(picPath).listFiles()?.find { it.nameWithoutExtension == getSHA256(i.queryUrl()) }
+                    val imageFile = if (isPicExists(url))
+                        File(picPath + File.separator + queryName(url))
+                        else null
+
                     if (imageFile != null) {
                         logger.info("本地已存在该图片（${imageFile.name}），正在尝试上传")
                         imageFile.toExternalResource().use { resource ->
                             updatedImage = contact.uploadImage(resource)
                         }
                         logger.info("图片上传成功！地址：${updatedImage.queryUrl()}")
+                        updateUrl(imageFile.name, updatedImage.queryUrl())
                         result += updatedImage
-                        logger.info("尝试重命名中……")
-                        if (!imageFile.renameTo(File("$picPath${getFileName(updatedImage.queryUrl())}"))) {
-                            logger.warning("文件重命名失败！")
-                        } else {
-                            logger.info("已重命名为：${imageFile.name}")
-                        }
                     } else {
                         logger.warning("本地未找到该图片，标记为已过期")
                         result += " [过期的图片] "
@@ -359,6 +373,82 @@ object CaveUtils {
         }
         return Pair(totalCount, successCount)
     }
+
+    fun isPicExists(url: String): Boolean {
+        val query = "SELECT 1 FROM cave_pics WHERE url = ? LIMIT 1"
+
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setString(1, url)
+                val resultSet = preparedStatement.executeQuery()
+                return resultSet.next()
+            }
+        }
+    }
+
+    fun queryUrl(name: String): String {
+        val query = "SELECT url FROM cave_pics WHERE name = ?"
+        var url = ""
+
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setString(1, name)
+                val resultSet = preparedStatement.executeQuery()
+
+                if (resultSet.next()) {
+                    url = resultSet.getString("user_nick")
+                }
+            }
+        }
+        return url
+    }
+
+    fun queryName(url: String): String {
+        val query = "SELECT name FROM cave_pics WHERE url = ?"
+        var name = ""
+
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setString(1, url)
+                val resultSet = preparedStatement.executeQuery()
+
+                if (resultSet.next()) {
+                    name = resultSet.getString("user_nick")
+                }
+            }
+        }
+        return name
+    }
+
+    fun updateUrl(name: String, newUrl: String) {
+        val query =
+            "UPDATE cave_pics SET url = ? WHERE name = ?"
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setString(1, newUrl)
+                preparedStatement.setString(2, name)
+
+                preparedStatement.executeUpdate()
+            }
+        }
+    }
+
+    fun addPicture(name: String, url: String) {
+        val query = """
+        INSERT INTO cave_pics (name, url)
+        VALUES (?, ?)
+    """
+
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setString(1, name)
+                preparedStatement.setString(2, url)
+
+                preparedStatement.executeUpdate()
+            }
+        }
+    }
+
 
     data class Comment(
         val caveId: Int,
