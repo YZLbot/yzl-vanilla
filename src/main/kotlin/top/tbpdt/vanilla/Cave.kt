@@ -1,6 +1,5 @@
 package top.tbpdt.vanilla
 
-import top.tbpdt.vanilla.configer.CaveConfig
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
@@ -10,7 +9,6 @@ import net.mamoe.mirai.message.data.ForwardMessageBuilder
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.emptyMessageChain
-import top.tbpdt.vanilla.PluginMain.save
 import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.CaveUtils.getCommentCount
@@ -20,6 +18,8 @@ import top.tbpdt.utils.CaveUtils.replaceExpiredImage
 import top.tbpdt.utils.CaveUtils.updatePickCount
 import top.tbpdt.utils.MessageUtils.getRemovedPrefixCommand
 import top.tbpdt.utils.MessageUtils.isCommand
+import top.tbpdt.vanilla.PluginMain.save
+import top.tbpdt.vanilla.configer.CaveConfig
 import java.text.SimpleDateFormat
 
 /**
@@ -29,6 +29,10 @@ object Cave : SimpleListenerHost() {
     @EventHandler(priority = EventPriority.HIGH)
     suspend fun GroupMessageEvent.handle() {
         if (message.isCommand("ca")) {
+            if (!CaveConfig.enableCaveAdd) {
+                group.sendMessage("回声洞投稿暂时关闭~")
+                return
+            }
             val text = message.getRemovedPrefixCommand("ca")
             if (text.isEmpty()) {
                 group.sendMessage("不能添加空信息！")
@@ -38,8 +42,8 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage("只输入了数字……是不是要用 .ci 呢？")
                 return
             }
-            if (message.any { it is Image }) {
-                group.sendMessage("由于技术原因，暂不支持图片的投稿哦~")
+            if (!CaveConfig.enablePics && message.any { it is Image }) {
+                group.sendMessage("暂不支持图片的投稿哦~")
                 return
             }
             val cdTime = CaveUtils.checkInterval()
