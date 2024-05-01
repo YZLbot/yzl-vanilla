@@ -76,8 +76,8 @@ For the good of the community as a whole, we strongly recommend that you do the 
 - [ ] 斗地主
 - [ ] 轮盘赌
   - [ ] 禁言
-- [ ] 好友申请事件提示
-- [ ] 加群申请提示
+- [x] 好友申请事件提示
+- [x] 加群申请提示
 - [ ] 入群验证
 - [ ] 敏感词审查
 - [ ] 刷屏侦测
