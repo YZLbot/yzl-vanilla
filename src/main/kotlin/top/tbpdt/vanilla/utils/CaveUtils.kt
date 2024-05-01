@@ -7,8 +7,8 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.emptyMessageChain
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
-import top.tbpdt.PluginMain.dataFolder
-import top.tbpdt.PluginMain.logger
+import top.tbpdt.vanilla.PluginMain.dataFolder
+import top.tbpdt.vanilla.PluginMain.logger
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

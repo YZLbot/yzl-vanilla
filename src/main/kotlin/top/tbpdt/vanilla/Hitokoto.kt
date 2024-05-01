@@ -1,4 +1,4 @@
-package top.tbpdt
+package top.tbpdt.vanilla
 
 import io.ktor.client.*
 import io.ktor.client.request.*

@@ -1,3 +1,5 @@
+package top.tbpdt.vanilla
+
 import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost

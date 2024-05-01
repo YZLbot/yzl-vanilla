@@ -1,9 +1,5 @@
-package top.tbpdt
+package top.tbpdt.vanilla
 
-import EatDots
-import InviteProcessor
-import MuteMe
-import configer.CaveConfig
 import kotlinx.coroutines.cancel
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -18,6 +14,7 @@ import top.tbpdt.utils.AccountUtils
 import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.DBUtils
 import top.tbpdt.utils.LogStrImage
+import top.tbpdt.vanilla.configer.CaveConfig
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(

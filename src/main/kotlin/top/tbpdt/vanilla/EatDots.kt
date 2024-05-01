@@ -1,3 +1,5 @@
+package top.tbpdt.vanilla
+
 import kotlinx.coroutines.delay
 import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority

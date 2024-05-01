@@ -1,4 +1,4 @@
-package top.tbpdt
+package top.tbpdt.vanilla
 
 import kotlinx.coroutines.delay
 import net.mamoe.mirai.event.EventHandler
@@ -8,7 +8,7 @@ import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.code.MiraiCode.deserializeMiraiCode
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.PlainText
-import top.tbpdt.PluginMain.logger
+import top.tbpdt.vanilla.PluginMain.logger
 import top.tbpdt.configer.AutoConfig
 import top.tbpdt.utils.MessageUtils.encodeToMiraiCode
 

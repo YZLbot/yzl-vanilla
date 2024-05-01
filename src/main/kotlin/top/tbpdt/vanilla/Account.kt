@@ -1,4 +1,4 @@
-package top.tbpdt
+package top.tbpdt.vanilla
 
 import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority

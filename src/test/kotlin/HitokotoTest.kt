@@ -1,6 +1,6 @@
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import top.tbpdt.getHitokoto
+import top.tbpdt.vanilla.getHitokoto
 
 /**
  * @author Takeoff0518

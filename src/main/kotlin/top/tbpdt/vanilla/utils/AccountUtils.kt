@@ -1,6 +1,6 @@
 package top.tbpdt.utils
 
-import top.tbpdt.PluginMain.logger
+import top.tbpdt.vanilla.PluginMain.logger
 import java.sql.Date
 import java.sql.Timestamp
 

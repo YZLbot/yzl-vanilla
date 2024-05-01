@@ -1,7 +1,7 @@
 package top.tbpdt.utils
 
-import top.tbpdt.PluginMain.dataFolder
-import top.tbpdt.PluginMain.logger
+import top.tbpdt.vanilla.PluginMain.dataFolder
+import top.tbpdt.vanilla.PluginMain.logger
 import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager

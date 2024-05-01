@@ -1,6 +1,6 @@
-package top.tbpdt
+package top.tbpdt.vanilla
 
-import configer.CaveConfig
+import top.tbpdt.vanilla.configer.CaveConfig
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
@@ -10,7 +10,7 @@ import net.mamoe.mirai.message.data.ForwardMessageBuilder
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.emptyMessageChain
-import top.tbpdt.PluginMain.save
+import top.tbpdt.vanilla.PluginMain.save
 import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.CaveUtils.getCommentCount
