@@ -23,6 +23,9 @@ object CaveConfig : AutoSavePluginConfig("CaveConfig") {
     @ValueDescription("查询返还经济")
     val queryRewardMoney: Int by value(1)
 
+    @ValueDescription("冷却时间(ms)")
+    val CDTime: Long by value(40000L)
+
     @ValueDescription("cave_id 黑名单")
     val caveBlackList: MutableSet<Int> by value()
 }

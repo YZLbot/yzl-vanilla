@@ -9,6 +9,7 @@ import net.mamoe.mirai.message.data.emptyMessageChain
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import top.tbpdt.vanilla.PluginMain.dataFolder
 import top.tbpdt.vanilla.PluginMain.logger
+import top.tbpdt.vanilla.configer.CaveConfig.CDTime
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -462,7 +463,6 @@ object CaveUtils {
     )
 
     private var lastCalledTime = 0L
-    private const val CD_TIME = 40000L
 
     fun checkInterval(): Long {
         val currentTime = System.currentTimeMillis()
@@ -472,8 +472,8 @@ object CaveUtils {
             -1
         } else {
             val elapsedTime = currentTime - lastCalledTime
-            if (elapsedTime < CD_TIME) {
-                (CD_TIME / 1000 - elapsedTime / 1000)
+            if (elapsedTime < CDTime) {
+                (CDTime / 1000 - elapsedTime / 1000)
             } else {
                 lastCalledTime = currentTime
                 -1
