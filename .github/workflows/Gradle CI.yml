@@ -53,3 +53,9 @@ jobs:
           name: "yzl-vanilla-build"
           # Directory containing files to upload
           path: build/mirai/
+
+      # Count code via cloc
+      - name: Install cloc
+        run: sudo apt install cloc
+      - name: Run cloc
+        run: cloc .
