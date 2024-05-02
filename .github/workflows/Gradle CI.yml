@@ -59,7 +59,7 @@ jobs:
         run: |
           sudo apt install cloc
           cloc . > cloc_results.txt
-          echo '### Cloc Results' >> $GITHUB_STEP_SUMMARY
+          echo '### 🔥 Cloc Results 🔥' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat cloc_results.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
