@@ -46,7 +46,7 @@ object Account : SimpleListenerHost() {
                             Date(System.currentTimeMillis())
                         )
                     } 天\n" +
-                    "已累计签到 ${userAccount.continuousSignDays} 天\n" +
+                    "已累计签到 ${userAccount.totalSignDays} 天\n" +
                     "---------------\n" +
                     "${hitokoto.hitokoto}\n" +
                     "——${hitokoto.fromWho ?: ""}${if (hitokoto.from == hitokoto.fromWho) "" else "《" + hitokoto.from + "》"}"
