@@ -375,6 +375,9 @@ object CaveUtils {
         return Pair(totalCount, successCount)
     }
 
+    /**
+     * 通过 URL 检查图片映射信息是否存在于数据库中
+     */
     fun isPicExists(url: String): Boolean {
         val query = "SELECT 1 FROM cave_pics WHERE url = ? LIMIT 1"
 
@@ -387,6 +390,9 @@ object CaveUtils {
         }
     }
 
+    /**
+     * 通过文件名查找数据库中其对应的 URL
+     */
     fun queryUrl(name: String): String {
         val query = "SELECT url FROM cave_pics WHERE name = ?"
         var url = ""
@@ -404,6 +410,9 @@ object CaveUtils {
         return url
     }
 
+    /**
+     * 通过 URL 查找数据库中其对应的文件名
+     */
     fun queryName(url: String): String {
         val query = "SELECT name FROM cave_pics WHERE url = ?"
         var name = ""
@@ -421,6 +430,9 @@ object CaveUtils {
         return name
     }
 
+    /**
+     * 通过文件名更新数据库中其对应的 URL
+     */
     fun updateUrl(name: String, newUrl: String) {
         val query =
             "UPDATE cave_pics SET url = ? WHERE name = ?"
@@ -434,6 +446,9 @@ object CaveUtils {
         }
     }
 
+    /**
+     * 向数据库中添加图片映射信息
+     */
     fun addPicture(name: String, url: String) {
         val query = """
         INSERT INTO cave_pics (name, url)
@@ -464,6 +479,16 @@ object CaveUtils {
 
     private var lastCalledTime = 0L
 
+    /**
+     * 检查冷却时间
+     *
+     * >宜群！宣群！不择手段的宣群！要强杀群星！
+     * >——时间之外的往事(188056008)
+     *
+     * @return 第一次调用时，返回 `-1`。
+     *
+     * 在后续的调用中，如果超过冷却时间，返回 `-1`，否则返回剩余时间的秒数。
+     */
     fun checkInterval(): Long {
         val currentTime = System.currentTimeMillis()
         val isFirst = lastCalledTime == 0L
