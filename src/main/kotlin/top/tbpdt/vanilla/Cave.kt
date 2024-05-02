@@ -1,5 +1,6 @@
 package top.tbpdt.vanilla
 
+import kotlinx.coroutines.delay
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
@@ -10,6 +11,7 @@ import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.emptyMessageChain
 import top.tbpdt.configer.GlobalConfig
+import top.tbpdt.utils.AccountUtils
 import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.CaveUtils.getCommentCount
 import top.tbpdt.utils.CaveUtils.loadCaveIds
@@ -21,6 +23,7 @@ import top.tbpdt.utils.MessageUtils.isCommand
 import top.tbpdt.vanilla.PluginMain.save
 import top.tbpdt.vanilla.configer.CaveConfig
 import java.text.SimpleDateFormat
+import kotlin.random.Random
 
 /**
  * @author Takeoff0518
@@ -54,7 +57,8 @@ object Cave : SimpleListenerHost() {
             val id = getCommentCount() + 1
             CaveUtils.saveComment(id, text, sender.id, sender.nick, group.id, group.name)
             loadComments(id).first().replaceExpiredImage(group)
-            group.sendMessage("回声洞 #${id} 添加成功~")
+            AccountUtils.addMoney(sender.id, -CaveConfig.addCost)
+            group.sendMessage("回声洞 #${id} 添加成功，消耗 ${CaveConfig.addCost} li~")
         }
         if (message.isCommand("cq") || message.isCommand("捡")) {
             val randomId = (1..getCommentCount()).filter { it !in CaveConfig.caveBlackList }.random()
@@ -73,6 +77,11 @@ object Cave : SimpleListenerHost() {
                 result += PlainText("\n\n--${i.senderNick}")
                 group.sendMessage(result)
                 updatePickCount(randomId)
+            }
+            if (Random.nextInt(100) < CaveConfig.queryRewardProbability) {
+                AccountUtils.addMoney(sender.id, CaveConfig.queryRewardMoney)
+                delay(2000)
+                group.sendMessage("你从回声洞中捡到了 ${CaveConfig.queryRewardMoney} li~")
             }
         }
         if (message.isCommand("ci")) {

@@ -14,6 +14,15 @@ object CaveConfig : AutoSavePluginConfig("CaveConfig") {
     @ValueDescription("是否启用回声洞投稿")
     val enableCaveAdd: Boolean by value(true)
 
+    @ValueDescription("单次投稿花费经济")
+    val addCost: Int by value(2)
+
+    @ValueDescription("查询返还经济概率(%)")
+    val queryRewardProbability: Int by value(2)
+
+    @ValueDescription("查询返还经济")
+    val queryRewardMoney: Int by value(1)
+
     @ValueDescription("cave_id 黑名单")
     val caveBlackList: MutableSet<Int> by value()
 }
