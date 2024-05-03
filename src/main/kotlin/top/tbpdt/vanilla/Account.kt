@@ -176,7 +176,7 @@ object Account : SimpleListenerHost() {
     /**
      * 修复缺失的昵称问题
      */
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.HIGHEST)
     suspend fun GroupMessageEvent.spyHandle() {
         if (!isUserExist(sender.id)) {
             initUserAccount(sender.id, senderName)
