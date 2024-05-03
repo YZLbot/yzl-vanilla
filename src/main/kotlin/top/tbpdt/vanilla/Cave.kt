@@ -54,11 +54,15 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage("冷却中，剩余 $cdTime 秒")
                 return
             }
-            val id = getCommentCount() + 1
-            CaveUtils.saveComment(id, text, sender.id, sender.nick, group.id, group.name)
-            loadComments(id).first().replaceExpiredImage(group)
-            AccountUtils.addMoney(sender.id, -CaveConfig.addCost)
-            group.sendMessage("回声洞 #${id} 添加成功，消耗 ${CaveConfig.addCost} li~")
+            if (AccountUtils.addMoney(sender.id, -CaveConfig.addCost)) {
+                val id = getCommentCount() + 1
+                CaveUtils.saveComment(id, text, sender.id, sender.nick, group.id, group.name)
+                loadComments(id).first().replaceExpiredImage(group)
+                AccountUtils.addMoney(sender.id, -CaveConfig.addCost)
+                group.sendMessage("回声洞 #${id} 添加成功，消耗 ${CaveConfig.addCost} li~")
+            } else {
+                group.sendMessage("所需 li 不足哦~ (${AccountUtils.queryMoney(sender.id)} < ${CaveConfig.addCost})")
+            }
         }
         if (message.isCommand("cq") || message.isCommand("捡")) {
             val randomId = (1..getCommentCount()).filter { it !in CaveConfig.caveBlackList }.random()
