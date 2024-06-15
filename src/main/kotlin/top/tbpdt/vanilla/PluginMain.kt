@@ -43,6 +43,7 @@ object PluginMain : KotlinPlugin(
         Account.registerTo(globalEventChannel())
         MuteMe.registerTo(globalEventChannel())
         InviteProcessor.registerTo(globalEventChannel())
+        AutoGroup.registerTo(globalEventChannel())
         logger.info { "正在加载数据库" }
         DBUtils.initCaveDB()
         AccountUtils.createTable()
@@ -59,6 +60,7 @@ object PluginMain : KotlinPlugin(
         CaveConfig.save()
         MuteMe.cancel()
         InviteProcessor.cancel()
+        AutoGroup.cancel()
         logger.info { "禁用成功！" }
     }
 

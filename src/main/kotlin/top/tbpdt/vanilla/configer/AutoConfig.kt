@@ -8,13 +8,28 @@ import net.mamoe.mirai.console.data.value
  * @author Takeoff0518
  */
 object AutoConfig : AutoSavePluginConfig("AutoConfig") {
+//    @ValueDescription(
+//        """
+//        新人入群欢迎提示语
+//        为空则不欢迎
+//        """
+//    )
+//    val newMemberJoinMessage: Set<String> by value(setOf("是新人诶……唔……可以吃嘛？", "欢迎~"))
+
     @ValueDescription(
         """
-        新人入群欢迎提示语
+        缺省新人入群欢迎提示语
         为空则不欢迎
         """
     )
-    val newMemberJoinMessage: Set<String> by value(setOf("是新人诶……唔……可以吃嘛？", "欢迎~"))
+    val defaultNewMemberJoinMessage: Set<String> by value(setOf("是新人诶……唔……可以吃嘛？", "欢迎~"))
+
+    @ValueDescription(
+        """
+        对于每个群单独的新人入群欢迎提示语
+        """
+    )
+    val newMemberJoinMessage: Map<Long, String> by value(mapOf(12345L to "是新人诶……唔……可以吃嘛？"))
 
     @ValueDescription(
         """
