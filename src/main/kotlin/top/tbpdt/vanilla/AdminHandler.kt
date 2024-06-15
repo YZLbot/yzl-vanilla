@@ -23,6 +23,7 @@ object AdminHandler : SimpleListenerHost() {
                 AutoConfig.reload()
                 EmojiConfig.reload()
                 GlobalConfig.reload()
+                subject.sendMessage("重载成功~")
             } catch (e: Exception) {
                 subject.sendMessage("重载失败！\n$e")
             }
