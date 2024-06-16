@@ -138,7 +138,7 @@ object AutoConfig : AutoSavePluginConfig("AutoConfig") {
         变量: %主动% (退出的前群员)
     """
     )
-    val quitMessage: String by value("有个人悄悄退群了...")
+    val quitMessage: String by value("%主动% 悄悄退群了...")
 
 
 }
