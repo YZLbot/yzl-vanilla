@@ -82,7 +82,8 @@ object ContentCensor : SimpleListenerHost() {
                     group.sendMessage(
                         At(sender) + "已启用该群的敏感词检测~\n" +
                                 "如果机器人不是群主或者管理员，敏感词检测不会工作哦~\n" +
-                                "若想获取触发检测后撤回的信息内容，请群主添加机器人好友~"
+                                "若想获取触发检测后撤回的信息内容，请群主添加机器人好友~\n" +
+                                "敏感词审查词库：https://github.com/YZLbot/censor-dict"
                     )
                 }
             } else {
