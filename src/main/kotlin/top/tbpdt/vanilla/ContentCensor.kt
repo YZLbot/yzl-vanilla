@@ -24,7 +24,7 @@ import java.util.*
  * @author Takeoff0518
  */
 object ContentCensor : SimpleListenerHost() {
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.HIGH)
     suspend fun GroupMessageEvent.handle() {
         if (group.id !in enableCensor) return
         if (!checkMutePermission()) return
@@ -33,13 +33,13 @@ object ContentCensor : SimpleListenerHost() {
             message.recall()
             delay(1000)
             if (group.id in muteTime && muteTime.getValue(group.id) > 0) {
-                group.sendMessage("群员 ${sender.nameCardOrNick}(${sender.id}) 触发消息正则审查")
-            } else {
                 sender.mute(muteTime.getValue(group.id))
                 group.sendMessage(
                     "群员 ${sender.nameCardOrNick}(${sender.id}) 触发消息正则审查\n" +
                             "已禁言 ${muteTime.getValue(group.id)} 秒！"
                 )
+            } else {
+                group.sendMessage("群员 ${sender.nameCardOrNick}(${sender.id}) 触发消息正则审查")
             }
             if (group.owner.id in bot.friends) {
                 group.owner.sendMessage(
@@ -59,7 +59,20 @@ object ContentCensor : SimpleListenerHost() {
     @EventHandler(priority = EventPriority.HIGH)
     suspend fun GroupMessageEvent.commandHandle() {
         val isPermissionOK = (sender.id in GlobalConfig.admin || sender.permission.level > 0)
-        if (message.isCommand("censor")) {
+        if (message.isCommand("censor time") && isPermissionOK) {
+            val newMuteTime = message.getRemovedPrefixCommand("censor time").toIntOrNull()
+            if (newMuteTime == null) {
+                group.sendMessage("参数类型不匹配，应为 [整数]！")
+                return
+            }
+            if (newMuteTime == 0) {
+                muteTime.remove(group.id)
+                group.sendMessage(At(sender) + "已清除触发敏感词检测的禁言~")
+            } else {
+                muteTime[group.id] = newMuteTime
+                group.sendMessage(At(sender) + "已将触发敏感词检测的禁言时间改为 $newMuteTime 秒~")
+            }
+        } else if (message.isCommand("censor")) {
             if (isPermissionOK) {
                 if (group.id in enableCensor) {
                     enableCensor.remove(group.id)
@@ -74,19 +87,6 @@ object ContentCensor : SimpleListenerHost() {
                 }
             } else {
                 group.sendMessage(At(sender) + "该群的敏感词检测：${if (group.id in enableCensor) "启用" else "关闭"}")
-            }
-        } else if (message.isCommand("censor time") && isPermissionOK) {
-            val newMuteTime = message.getRemovedPrefixCommand("censor time").toIntOrNull()
-            if (newMuteTime == null) {
-                group.sendMessage("参数类型不匹配，应为 [整数]！")
-                return
-            }
-            if (newMuteTime == 0) {
-                muteTime.remove(group.id)
-                group.sendMessage(At(sender) + "已清除触发敏感词检测的禁言~")
-            } else {
-                muteTime[group.id] = newMuteTime
-                group.sendMessage(At(sender) + "已将触发敏感词检测的禁言时间改为 $newMuteTime 秒~")
             }
         }
     }
