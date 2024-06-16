@@ -28,4 +28,7 @@ object CaveConfig : AutoSavePluginConfig("CaveConfig") {
 
     @ValueDescription("cave_id 黑名单")
     val caveBlackList: MutableSet<Int> by value()
+
+    @ValueDescription("启用投稿时敏感词检测")
+    val enableCensor: Boolean by value(true)
 }

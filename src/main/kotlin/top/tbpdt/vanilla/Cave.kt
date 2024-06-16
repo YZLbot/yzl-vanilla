@@ -6,10 +6,7 @@ import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
 import net.mamoe.mirai.event.events.GroupMessageEvent
-import net.mamoe.mirai.message.data.ForwardMessageBuilder
-import net.mamoe.mirai.message.data.Image
-import net.mamoe.mirai.message.data.PlainText
-import net.mamoe.mirai.message.data.emptyMessageChain
+import net.mamoe.mirai.message.data.*
 import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.utils.AccountUtils
 import top.tbpdt.utils.CaveUtils
@@ -22,7 +19,9 @@ import top.tbpdt.utils.MessageUtils.getRemovedPrefixCommand
 import top.tbpdt.utils.MessageUtils.isCommand
 import top.tbpdt.vanilla.PluginMain.save
 import top.tbpdt.vanilla.configer.CaveConfig
+import top.tbpdt.vanilla.utils.CensorUtils.checkCensor
 import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.random.Random
 
 /**
@@ -55,6 +54,24 @@ object Cave : SimpleListenerHost() {
                 return
             }
             if (AccountUtils.addMoney(sender.id, -CaveConfig.addCost)) {
+                if (CaveConfig.enableCensor) {
+                    val match = checkCensor(text)
+                    if (match != null) {
+                        group.sendMessage(At(sender) + "检测到投稿内容带有敏感词，已回绝投稿，请在机器人向你发送的私信中查看具体内容~")
+                        if (sender.id in bot.friends) {
+                            sender.sendMessage(
+                                "命中：${match}\n" +
+                                        "时间：${
+                                            SimpleDateFormat(
+                                                "yy/MM/dd HH:mm:ss",
+                                                Locale.getDefault()
+                                            ).format(Date())
+                                        }"
+                            )
+                        }
+                        return
+                    }
+                }
                 val id = getCommentCount() + 1
                 CaveUtils.saveComment(id, text, sender.id, sender.nick, group.id, group.name)
                 loadComments(id).first().replaceExpiredImage(group)
