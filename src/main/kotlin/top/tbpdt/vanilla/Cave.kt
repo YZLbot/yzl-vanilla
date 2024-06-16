@@ -48,30 +48,30 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage("暂不支持图片的投稿哦~")
                 return
             }
+            if (CaveConfig.enableCensor) {
+                val match = checkCensor(text)
+                if (match != null) {
+                    group.sendMessage(At(sender) + "检测到投稿内容带有敏感词，已回绝投稿，请在机器人向你发送的私信中查看具体内容~")
+                    if (sender.id in bot.friends) {
+                        sender.sendMessage(
+                            "命中：${match}\n" +
+                                    "时间：${
+                                        SimpleDateFormat(
+                                            "yy/MM/dd HH:mm:ss",
+                                            Locale.getDefault()
+                                        ).format(Date())
+                                    }"
+                        )
+                    }
+                    return
+                }
+            }
             val cdTime = CaveUtils.checkInterval()
             if (cdTime != -1L) {
                 group.sendMessage("冷却中，剩余 $cdTime 秒")
                 return
             }
             if (AccountUtils.addMoney(sender.id, -CaveConfig.addCost)) {
-                if (CaveConfig.enableCensor) {
-                    val match = checkCensor(text)
-                    if (match != null) {
-                        group.sendMessage(At(sender) + "检测到投稿内容带有敏感词，已回绝投稿，请在机器人向你发送的私信中查看具体内容~")
-                        if (sender.id in bot.friends) {
-                            sender.sendMessage(
-                                "命中：${match}\n" +
-                                        "时间：${
-                                            SimpleDateFormat(
-                                                "yy/MM/dd HH:mm:ss",
-                                                Locale.getDefault()
-                                            ).format(Date())
-                                        }"
-                            )
-                        }
-                        return
-                    }
-                }
                 val id = getCommentCount() + 1
                 CaveUtils.saveComment(id, text, sender.id, sender.nick, group.id, group.name)
                 loadComments(id).first().replaceExpiredImage(group)
