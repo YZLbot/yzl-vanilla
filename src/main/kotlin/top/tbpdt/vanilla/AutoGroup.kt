@@ -49,6 +49,7 @@ object AutoGroup : SimpleListenerHost() {
 
     @EventHandler(priority = EventPriority.NORMAL)
     suspend fun MemberMuteEvent.handle() {
+        if(operatorOrBot == group.botAsMember) return
         val msg = AutoConfig.memberMutedMessage
             .encodeToMiraiCode(operatorOrBot, member)
             .deserializeMiraiCode()
@@ -57,6 +58,7 @@ object AutoGroup : SimpleListenerHost() {
 
     @EventHandler(priority = EventPriority.NORMAL)
     suspend fun MemberUnmuteEvent.handle() {
+        if(operatorOrBot == group.botAsMember) return
         val msg = AutoConfig.memberUnmuteMessage
             .encodeToMiraiCode(operatorOrBot, member)
             .deserializeMiraiCode()
