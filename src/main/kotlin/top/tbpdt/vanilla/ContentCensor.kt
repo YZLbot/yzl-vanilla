@@ -14,6 +14,8 @@ import top.tbpdt.utils.MessageUtils.checkMutePermission
 import top.tbpdt.utils.MessageUtils.getPlainText
 import top.tbpdt.utils.MessageUtils.getRemovedPrefixCommand
 import top.tbpdt.utils.MessageUtils.isCommand
+import top.tbpdt.vanilla.PluginMain.save
+import top.tbpdt.vanilla.configer.CensorConfig
 import top.tbpdt.vanilla.configer.CensorConfig.enableCensor
 import top.tbpdt.vanilla.configer.CensorConfig.muteTime
 import top.tbpdt.vanilla.utils.CensorUtils.checkCensor
@@ -72,6 +74,7 @@ object ContentCensor : SimpleListenerHost() {
                 muteTime[group.id] = newMuteTime
                 group.sendMessage(At(sender) + "已将触发敏感词检测的禁言时间改为 $newMuteTime 秒~")
             }
+            CensorConfig.save()
         } else if (message.isCommand("censor")) {
             if (isPermissionOK) {
                 if (group.id in enableCensor) {
@@ -86,6 +89,7 @@ object ContentCensor : SimpleListenerHost() {
                                 "敏感词审查词库：https://github.com/YZLbot/censor-dict"
                     )
                 }
+                CensorConfig.save()
             } else {
                 group.sendMessage(At(sender) + "该群的敏感词检测：${if (group.id in enableCensor) "启用" else "关闭"}")
             }
