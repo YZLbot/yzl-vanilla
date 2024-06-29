@@ -26,7 +26,7 @@ import java.util.*
  * @author Takeoff0518
  */
 object ContentCensor : SimpleListenerHost() {
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGHEST)
     suspend fun GroupMessageEvent.handle() {
         if (group.id !in enableCensor) return
         if (!checkMutePermission()) return
@@ -56,9 +56,10 @@ object ContentCensor : SimpleListenerHost() {
                 group.owner.sendMessage(recalledMessage.build())
             }
         }
+        intercept()
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun GroupMessageEvent.commandHandle() {
         val isPermissionOK = (sender.id in GlobalConfig.admin || sender.permission.level > 0)
         if (message.isCommand("censor time") && isPermissionOK) {

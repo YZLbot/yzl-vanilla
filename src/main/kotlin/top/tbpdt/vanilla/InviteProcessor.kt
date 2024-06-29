@@ -20,7 +20,7 @@ import top.tbpdt.utils.AccountUtils.queryMoney
  * @author Takeoff0518
  */
 object InviteProcessor : SimpleListenerHost() {
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     suspend fun NewFriendRequestEvent.handle() {
         val textTemplate = """
             |添加者：${this.fromNick}(${this.fromId})
@@ -39,7 +39,7 @@ object InviteProcessor : SimpleListenerHost() {
         bot.getGroup(GlobalConfig.group)?.sendMessage("已同意加好友请求~\n$textTemplate")
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     suspend fun BotInvitedJoinGroupRequestEvent.handle() {
         val textTemplate = """
             |邀请者：${this.invitorNick}(${this.invitorId})

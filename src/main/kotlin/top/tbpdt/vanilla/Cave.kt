@@ -28,7 +28,7 @@ import kotlin.random.Random
  * @author Takeoff0518
  */
 object Cave : SimpleListenerHost() {
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun GroupMessageEvent.handle() {
         if (message.isCommand("ca")) {
             if (!CaveConfig.enableCaveAdd) {

@@ -15,7 +15,7 @@ object EatDots : SimpleListenerHost() {
     private val indexList: List<String> =
         listOf("一", "两", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四", "十五")
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun GroupMessageEvent.onMessage() {
         val plainText = message.getPlainText().trim()
         val dotCount = if (plainText.isNotEmpty() && plainText.all { it == '。' }) plainText.length else -1

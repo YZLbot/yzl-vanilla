@@ -23,7 +23,7 @@ import top.tbpdt.vanilla.PluginMain.logger
  * @author Takeoff0518
  */
 object AutoGroup : SimpleListenerHost() {
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun MemberJoinEvent.handle() {
         if (groupId in newMemberJoinMessage) {
             group.sendMessage(At(member) + newMemberJoinMessage.getValue(groupId))
@@ -32,14 +32,14 @@ object AutoGroup : SimpleListenerHost() {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun MemberLeaveEvent.Quit.handle() {
         if (AutoConfig.quitMessage.isEmpty()) return
         val msg = AutoConfig.quitMessage.replace("%主动%", "${member.nick}(${member.id})").deserializeMiraiCode()
         group.sendMessage(msg)
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun MemberLeaveEvent.Kick.handle() {
         if (AutoConfig.kickMessage.isEmpty()) return
         val msg = AutoConfig.kickMessage.replace("%主动%", "[mirai:at:${operatorOrBot.id}]")
@@ -47,7 +47,7 @@ object AutoGroup : SimpleListenerHost() {
         group.sendMessage(msg)
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun MemberMuteEvent.handle() {
         if(operatorOrBot == group.botAsMember) return
         val msg = AutoConfig.memberMutedMessage
@@ -56,7 +56,7 @@ object AutoGroup : SimpleListenerHost() {
         group.sendMessage(msg)
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun MemberUnmuteEvent.handle() {
         if(operatorOrBot == group.botAsMember) return
         val msg = AutoConfig.memberUnmuteMessage
@@ -65,7 +65,7 @@ object AutoGroup : SimpleListenerHost() {
         group.sendMessage(msg)
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun BotMuteEvent.handle() {
         try {
             for (msg in AutoConfig.botMutedMessage) {
@@ -77,20 +77,20 @@ object AutoGroup : SimpleListenerHost() {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun BotUnmuteEvent.handle() {
         delay(1000)
         val msg = botUnmutedMessage.encodeToMiraiCode(operator, true).deserializeMiraiCode()
         group.sendMessage(msg)
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun BotJoinGroupEvent.handle() {
         delay(1000)
         group.sendMessage("我来啦~")
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun GroupMuteAllEvent.handle() {
         if (!new) {
             val msg = groupMuteAllRelease.encodeToMiraiCode(operatorOrBot, true).deserializeMiraiCode()
@@ -98,7 +98,7 @@ object AutoGroup : SimpleListenerHost() {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun MemberPermissionChangeEvent.handle() {
         val msg = when {
             origin.isOwner() || new.isOwner() -> PlainText("群主变了？？？")

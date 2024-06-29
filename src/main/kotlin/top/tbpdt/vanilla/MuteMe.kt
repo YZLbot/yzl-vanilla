@@ -13,7 +13,7 @@ import top.tbpdt.utils.MessageUtils.getPlainText
  * @author Takeoff0518
  */
 object MuteMe : SimpleListenerHost() {
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun GroupMessageEvent.handler() {
         if (message.getPlainText().contains("我好了")) {
             if (checkMutePermission()) {

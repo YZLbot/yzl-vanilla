@@ -30,7 +30,7 @@ import java.sql.Date
  * @author Takeoff0518
  */
 object Account : SimpleListenerHost() {
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun GroupMessageEvent.handle() {
         if (message.isCommand("me")) {
             val userId = message.getRemovedPrefixCommand("me").toLongOrNull() ?: sender.id
@@ -114,7 +114,7 @@ object Account : SimpleListenerHost() {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun MessageEvent.adminHandle() {
         if (sender.id !in GlobalConfig.admin) return
         if (message.isCommand("money set")) {
@@ -176,7 +176,7 @@ object Account : SimpleListenerHost() {
     /**
      * 修复缺失的昵称问题
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     suspend fun GroupMessageEvent.spyHandle() {
         if (!isUserExist(sender.id)) {
             initUserAccount(sender.id, senderName)

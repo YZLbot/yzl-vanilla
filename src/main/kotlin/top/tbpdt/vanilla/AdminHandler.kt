@@ -17,7 +17,7 @@ import top.tbpdt.vanilla.configer.CaveConfig
  */
 object AdminHandler : SimpleListenerHost() {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun MessageEvent.reloadHandle() {
         if (sender.id !in GlobalConfig.admin) return
         if (message.isCommand("reload")) {

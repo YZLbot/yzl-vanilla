@@ -18,14 +18,14 @@ object EmojiFetch : SimpleListenerHost() {
 
     private val onWaiting = mutableSetOf<Long>()
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun GroupMessageEvent.commandHandle() {
         if (!EmojiConfig.enable || !message.isCommand("getimg")) return
         onWaiting.add(sender.id)
         group.sendMessage("请输入你要获取的表情")
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
     suspend fun GroupMessageEvent.handle() {
         if (sender.id !in onWaiting) return
         if (EmojiConfig.enable && message.isCommand("getimg")) return
