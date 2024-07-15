@@ -55,8 +55,8 @@ object ContentCensor : SimpleListenerHost() {
                 recalledMessage.add(this)
                 group.owner.sendMessage(recalledMessage.build())
             }
+            intercept()
         }
-        intercept()
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
