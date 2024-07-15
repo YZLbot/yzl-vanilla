@@ -14,6 +14,7 @@ import top.tbpdt.utils.AccountUtils
 import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.DBUtils
 import top.tbpdt.utils.LogStrImage
+import top.tbpdt.vanilla.configer.AutoPicsConfig
 import top.tbpdt.vanilla.configer.CaveConfig
 import top.tbpdt.vanilla.configer.CensorConfig
 import top.tbpdt.vanilla.utils.CensorUtils
@@ -38,6 +39,7 @@ object PluginMain : KotlinPlugin(
         CaveConfig.reload()
         MuteMeConfig.reload()
         CensorConfig.reload()
+        AutoPicsConfig.reload()
         logger.info { "正在注册监听器到全局..." }
         EmojiFetch.registerTo(globalEventChannel())
         AdminHandler.registerTo(globalEventChannel())
@@ -48,11 +50,13 @@ object PluginMain : KotlinPlugin(
         InviteProcessor.registerTo(globalEventChannel())
         AutoGroup.registerTo(globalEventChannel())
         ContentCensor.registerTo(globalEventChannel())
+        AutoPics.registerTo(globalEventChannel())
         logger.info { "正在加载数据库" }
         DBUtils.initCaveDB()
         AccountUtils.createTable()
         CaveUtils.createTable()
         CensorUtils.initCensorDict()
+        AutoPics.initPaths()
     }
 
     override fun onDisable() {
@@ -67,6 +71,7 @@ object PluginMain : KotlinPlugin(
         InviteProcessor.cancel()
         AutoGroup.cancel()
         ContentCensor.cancel()
+        AutoPics.cancel()
         logger.info { "禁用成功！" }
     }
 
