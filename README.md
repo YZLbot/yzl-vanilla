@@ -43,11 +43,11 @@ For the good of the community as a whole, we strongly recommend that you do the 
 - [ ] 定时发送
   - [ ] cron
   - [ ] 作用域
-- [ ] 戳一戳
-  - [x] 多候选
-  - [ ] 富文本
-  - [ ] 概率回戳
-- [ ] 群常见事件提示（AutoGroup 相关）
+- [ ] ~~戳一戳~~
+  - [ ] ~~多候选~~
+  - [ ] ~~富文本~~
+  - [ ] ~~概率回戳~~
+- [x] 群常见事件提示（AutoGroup 相关）
 - [x] 图片/表情信息获取
 - [ ] 天气查询
 - [ ] 响应黑名单
@@ -70,7 +70,7 @@ For the good of the community as a whole, we strongly recommend that you do the 
 - [ ] 图片生成（petpet）
 - [ ] MC 服务器信息查询
 - [ ] MC 服务器管理（chatsync）
-- [ ] 知识大比拼（选择题，用户投稿）
+- [ ] ~~知识大比拼（选择题，用户投稿）~~
 - [ ] 新闻推送（知乎）
 - [ ] 24 点
 - [ ] 斗地主
@@ -79,5 +79,5 @@ For the good of the community as a whole, we strongly recommend that you do the 
 - [x] 好友申请事件提示
 - [x] 加群申请提示
 - [ ] 入群验证
-- [ ] 敏感词审查
+- [x] 敏感词审查
 - [ ] 刷屏侦测
