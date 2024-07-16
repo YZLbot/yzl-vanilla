@@ -61,4 +61,11 @@ object GlobalConfig : AutoSavePluginConfig("Config") {
         """
     )
     val moneyLimit: Int by value(100)
+
+    @ValueDescription(
+        """
+        拉群下限人数
+        """
+    )
+    val groupMemberLimit: Int by value(10)
 }

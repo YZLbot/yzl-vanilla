@@ -65,6 +65,14 @@ object InviteProcessor : SimpleListenerHost() {
             delay((1000L..5000L).random())
             accept()
             bot.getGroup(GlobalConfig.group)?.sendMessage("已同意拉群请求，消耗 $moneyLimit li~\n$textTemplate")
+//            delay((1000L..5000L).random())
+//            val invitedGroup = bot.getGroup(groupId)!!
+//            if (invitedGroup.members.size < groupMemberLimit) {
+//                invitedGroup.quit()
+//                AccountUtils.addMoney(invitorId, moneyLimit)
+//                bot.getGroup(GlobalConfig.group)
+//                    ?.sendMessage("由于群人数不足 (${invitedGroup.members.size} < $groupMemberLimit)，已自动退出群聊\n已返还消耗的 li~")
+//            }
         } else if (invitorId in bot.friends) {
             bot.getFriend(invitorId)?.sendMessage("请在加群 ${GlobalConfig.group} 后再次尝试拉群~")
             bot.getGroup(GlobalConfig.group)?.sendMessage("由于未加饲养群，已回绝拉群请求~\n$textTemplate")
