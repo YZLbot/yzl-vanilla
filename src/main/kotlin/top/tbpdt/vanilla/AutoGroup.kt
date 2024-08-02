@@ -25,6 +25,9 @@ import top.tbpdt.vanilla.PluginMain.logger
 object AutoGroup : SimpleListenerHost() {
     @EventHandler(priority = EventPriority.LOWEST)
     suspend fun MemberJoinEvent.handle() {
+        if (member.id == bot.id) {
+            return
+        }
         if (groupId in newMemberJoinMessage) {
             group.sendMessage(At(member) + newMemberJoinMessage.getValue(groupId))
         } else if (defaultNewMemberJoinMessage.isNotEmpty()) {
@@ -49,7 +52,7 @@ object AutoGroup : SimpleListenerHost() {
 
     @EventHandler(priority = EventPriority.LOWEST)
     suspend fun MemberMuteEvent.handle() {
-        if(operatorOrBot == group.botAsMember) return
+        if (operatorOrBot == group.botAsMember) return
         val msg = AutoConfig.memberMutedMessage
             .encodeToMiraiCode(operatorOrBot, member)
             .deserializeMiraiCode()
@@ -58,7 +61,7 @@ object AutoGroup : SimpleListenerHost() {
 
     @EventHandler(priority = EventPriority.LOWEST)
     suspend fun MemberUnmuteEvent.handle() {
-        if(operatorOrBot == group.botAsMember) return
+        if (operatorOrBot == group.botAsMember) return
         val msg = AutoConfig.memberUnmuteMessage
             .encodeToMiraiCode(operatorOrBot, member)
             .deserializeMiraiCode()
