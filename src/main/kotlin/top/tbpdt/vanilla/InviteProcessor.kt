@@ -27,7 +27,7 @@ object InviteProcessor : SimpleListenerHost() {
             |来自群：${if (this.fromGroupId == 0L) "未知" else fromGroupId}
         """.trimMargin()
         if (!autoAcceptNewFriendRequest) {
-            bot.getGroup(GlobalConfig.group)?.sendMessage("按照配置，已回绝加好友请求~\n$textTemplate")
+            bot.getGroup(GlobalConfig.group)?.sendMessage("由于配置禁用自动加好友，已回绝加好友请求~\n$textTemplate")
         }
         if (queryExperience(fromId) < experienceLimit) {
             bot.getGroup(GlobalConfig.group)
@@ -46,7 +46,7 @@ object InviteProcessor : SimpleListenerHost() {
             |目标群：${this.groupName}(${this.groupId})
         """.trimMargin()
         if (!autoAcceptInvitedJoinGroupRequest) {
-            bot.getGroup(GlobalConfig.group)?.sendMessage("按照配置，已回绝拉群请求~\n$textTemplate")
+            bot.getGroup(GlobalConfig.group)?.sendMessage("由于配置禁用自动拉群，已回绝拉群请求~\n$textTemplate")
             return
         }
         if (queryExperience(invitorId) < experienceLimit) {
