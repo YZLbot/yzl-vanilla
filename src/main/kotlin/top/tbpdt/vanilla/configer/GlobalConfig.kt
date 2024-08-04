@@ -48,12 +48,28 @@ object GlobalConfig : AutoSavePluginConfig("Config") {
     )
     val autoAcceptNewFriendRequest: Boolean by value(true)
 
+    @Deprecated("已分离为加好友 (newFriendExperienceLimi) 与拉群 (joinGroupExperienceLimit)")
     @ValueDescription(
         """
         加好友、拉群经验限制
+        已弃用，分离为加好友 (newFriendExperienceLimi) 与拉群 (joinGroupExperienceLimit) 两项
         """
     )
     val experienceLimit: Int by value(100)
+
+    @ValueDescription(
+        """
+        加好友经验限制
+        """
+    )
+    val newFriendExperienceLimit: Int by value(0)
+
+    @ValueDescription(
+        """
+        拉群经验限制
+        """
+    )
+    val joinGroupExperienceLimit: Int by value(100)
 
     @ValueDescription(
         """
