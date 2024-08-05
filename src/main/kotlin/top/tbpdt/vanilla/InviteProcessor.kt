@@ -26,7 +26,7 @@ object InviteProcessor : SimpleListenerHost() {
     suspend fun NewFriendRequestEvent.handle() {
         val textTemplate = """
             |添加者：${this.fromNick}(${this.fromId})
-            |来自群：${if (this.fromGroupId == 0L) "未知" else fromGroupId}
+            |来自群：${this.fromGroup}(${this.fromGroupId})
         """.trimMargin()
         if (!autoAcceptNewFriendRequest) {
             bot.getGroup(GlobalConfig.group)?.sendMessage("由于配置禁用自动加好友，已回绝加好友请求~\n$textTemplate")
