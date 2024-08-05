@@ -12,6 +12,7 @@ import top.tbpdt.utils.MessageUtils.isCommand
 import top.tbpdt.vanilla.PluginMain.reload
 import top.tbpdt.vanilla.PluginMain.save
 import top.tbpdt.vanilla.configer.AutoPicsConfig
+import top.tbpdt.vanilla.configer.BlacklistConfig
 import top.tbpdt.vanilla.configer.CaveConfig
 import top.tbpdt.vanilla.configer.CensorConfig
 
@@ -32,6 +33,7 @@ object AdminHandler : SimpleListenerHost() {
                 MuteMeConfig.reload()
                 CensorConfig.reload()
                 AutoPicsConfig.reload()
+                BlacklistConfig.reload()
                 AutoPics.initPaths()
                 subject.sendMessage("重载配置成功~")
             } catch (e: Exception) {
@@ -47,6 +49,7 @@ object AdminHandler : SimpleListenerHost() {
                 MuteMeConfig.save()
                 CensorConfig.save()
                 AutoPicsConfig.save()
+                BlacklistConfig.save()
                 subject.sendMessage("强行保存配置成功~")
             } catch (e: Exception) {
                 subject.sendMessage("强行保存配置失败！\n$e")

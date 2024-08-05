@@ -15,6 +15,7 @@ import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.DBUtils
 import top.tbpdt.utils.LogStrImage
 import top.tbpdt.vanilla.configer.AutoPicsConfig
+import top.tbpdt.vanilla.configer.BlacklistConfig
 import top.tbpdt.vanilla.configer.CaveConfig
 import top.tbpdt.vanilla.configer.CensorConfig
 import top.tbpdt.vanilla.utils.CensorUtils
@@ -40,6 +41,7 @@ object PluginMain : KotlinPlugin(
         MuteMeConfig.reload()
         CensorConfig.reload()
         AutoPicsConfig.reload()
+        BlacklistConfig.reload()
         logger.info { "正在注册监听器到全局..." }
         EmojiFetch.registerTo(globalEventChannel())
         AdminHandler.registerTo(globalEventChannel())
@@ -50,6 +52,7 @@ object PluginMain : KotlinPlugin(
         AutoGroup.registerTo(globalEventChannel())
         ContentCensor.registerTo(globalEventChannel())
         AutoPics.registerTo(globalEventChannel())
+        Blacklist.registerTo(globalEventChannel())
         logger.info { "正在加载数据库" }
         DBUtils.initCaveDB()
         AccountUtils.createTable()
