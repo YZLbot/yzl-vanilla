@@ -32,6 +32,7 @@ object AdminHandler : SimpleListenerHost() {
                 MuteMeConfig.reload()
                 CensorConfig.reload()
                 AutoPicsConfig.reload()
+                AutoPics.initPaths()
                 subject.sendMessage("重载配置成功~")
             } catch (e: Exception) {
                 subject.sendMessage("重载配置失败！\n$e")
