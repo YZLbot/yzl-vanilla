@@ -48,6 +48,10 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage("暂不支持图片的投稿哦~")
                 return
             }
+            if (text.length > CaveConfig.maxCharCount) {
+                group.sendMessage("投稿内容超出最多字符数限制 (${text.length} > ${CaveConfig.maxCharCount})，请尝试缩减内容后再进行投稿哦~")
+                return
+            }
             if (CaveConfig.enableCensor) {
                 val match = checkCensor(text)
                 if (match != null) {

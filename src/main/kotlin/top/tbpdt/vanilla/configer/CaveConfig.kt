@@ -31,4 +31,7 @@ object CaveConfig : AutoSavePluginConfig("CaveConfig") {
 
     @ValueDescription("启用投稿时敏感词检测")
     val enableCensor: Boolean by value(true)
+
+    @ValueDescription("最多投稿字符数")
+    val maxCharCount: Int by value(500)
 }
