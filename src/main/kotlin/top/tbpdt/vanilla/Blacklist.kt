@@ -29,7 +29,7 @@ object Blacklist : SimpleListenerHost() {
         if (message.isCommand("blackg")) {
             val groupId = message.getRemovedPrefixCommand("blackg").toLongOrNull()
             if (!((this is GroupMessageEvent &&
-                        sender.permission.level >= group.botPermission.level &&
+                        sender.permission.level >= 1 &&
                         groupId == group.id) ||
                         sender.id in admin)
             ) {
