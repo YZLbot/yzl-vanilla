@@ -53,6 +53,10 @@ object InviteProcessor : SimpleListenerHost() {
             |邀请者：${this.invitorNick}(${this.invitorId})
             |目标群：${this.groupName}(${this.groupId})
         """.trimMargin()
+        if(invitorId in GlobalConfig.admin){
+            accept()
+            bot.getGroup(GlobalConfig.group)?.sendMessage("已同意拉群请求~\n$textTemplate")
+        }
         if (!autoAcceptInvitedJoinGroupRequest) {
             bot.getGroup(GlobalConfig.group)?.sendMessage("由于配置禁用自动拉群，已回绝拉群请求~\n$textTemplate")
             return
