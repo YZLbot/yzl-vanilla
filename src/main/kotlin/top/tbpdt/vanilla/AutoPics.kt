@@ -16,6 +16,7 @@ object AutoPics : SimpleListenerHost() {
     // k = regex, v = files
     val pathMap: MutableMap<Regex, List<File>> = mutableMapOf()
     fun initPaths() {
+        pathMap.clear()
         logger.info("正在载入关键词触发图片...")
         for (i in regexMap) {
             val listedFile: MutableList<File> = mutableListOf()
