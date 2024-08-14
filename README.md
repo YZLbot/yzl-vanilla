@@ -43,10 +43,10 @@ For the good of the community as a whole, we strongly recommend that you do the 
 - [ ] 定时发送
   - [ ] cron
   - [ ] 作用域
-- [ ] ~~戳一戳~~
-  - [ ] ~~多候选~~
+- [x] 戳一戳
+  - [x] 多候选
   - [ ] ~~富文本~~
-  - [ ] ~~概率回戳~~
+  - [x] 概率回戳
 - [x] 群常见事件提示（AutoGroup 相关）
 - [x] 图片/表情信息获取
 - [ ] 天气查询

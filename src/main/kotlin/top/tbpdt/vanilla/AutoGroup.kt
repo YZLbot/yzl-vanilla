@@ -14,9 +14,16 @@ import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.PlainText
 import top.tbpdt.configer.AutoConfig
 import top.tbpdt.configer.AutoConfig.botUnmutedMessage
+import top.tbpdt.configer.AutoConfig.counterNudge
+import top.tbpdt.configer.AutoConfig.counterNudgeCompleteMessage
+import top.tbpdt.configer.AutoConfig.counterNudgeMessage
 import top.tbpdt.configer.AutoConfig.defaultNewMemberJoinMessage
 import top.tbpdt.configer.AutoConfig.groupMuteAllRelease
 import top.tbpdt.configer.AutoConfig.newMemberJoinMessage
+import top.tbpdt.configer.AutoConfig.nudgedReply
+import top.tbpdt.configer.AutoConfig.superNudge
+import top.tbpdt.configer.AutoConfig.superNudgeMessage
+import top.tbpdt.configer.AutoConfig.superNudgeTimes
 import top.tbpdt.utils.MessageUtils.encodeToMiraiCode
 import top.tbpdt.utils.MessageUtils.getPlainText
 import top.tbpdt.vanilla.PluginMain.logger
@@ -133,4 +140,28 @@ object AutoGroup : SimpleListenerHost() {
         group.sendMessage(message.quote() + result)
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    suspend fun NudgeEvent.handle() {
+        if (target.id != bot.id) {
+            return
+        }
+        val randomNum  = (1..100).random()
+        if (randomNum <= superNudge) {
+            subject.sendMessage(superNudgeMessage)
+            repeat(superNudgeTimes) {
+                from.nudge()
+                delay((500L..1000L).random())
+            }
+            return
+        }
+        if (randomNum <= counterNudge) {
+            subject.sendMessage(counterNudgeMessage.random())
+            delay((500L..2000L).random())
+            from.nudge()
+            delay((500L..2000L).random())
+            subject.sendMessage(counterNudgeCompleteMessage.random())
+            return
+        }
+        subject.sendMessage(nudgedReply.random())
+    }
 }

@@ -62,7 +62,7 @@ object AutoConfig : AutoSavePluginConfig("AutoConfig") {
     )
 
     @ValueDescription("戳一戳触发反击的概率百分比(%)")
-    val counterNudge: Int by value(4)
+    val counterNudge: Int by value(0)
 
     @ValueDescription("戳一戳触发反击的回复消息")
     val counterNudgeMessage: Set<String> by value(setOf("戳回去(￣ ‘i ￣;)"))
@@ -71,7 +71,7 @@ object AutoConfig : AutoSavePluginConfig("AutoConfig") {
     val counterNudgeCompleteMessage: Set<String> by value(setOf("哼", "切"))
 
     @ValueDescription("触发戳一戳超级加倍的概率 (仅触发反击时)")
-    val superNudge: Int by value(1)
+    val superNudge: Int by value(0)
     val superNudgeMessage: String by value("超级加倍！")
 
     @ValueDescription("超级加倍戳一戳次数")
