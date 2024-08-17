@@ -19,6 +19,8 @@ import top.tbpdt.utils.MessageUtils.getRemovedPrefixCommand
 import top.tbpdt.utils.MessageUtils.isCommand
 import top.tbpdt.vanilla.PluginMain.save
 import top.tbpdt.vanilla.configer.CaveConfig
+import top.tbpdt.vanilla.configer.CaveConfig.CDTime
+import top.tbpdt.vanilla.utils.CDTimer
 import top.tbpdt.vanilla.utils.CensorUtils.checkCensor
 import java.text.SimpleDateFormat
 import java.util.*
@@ -28,6 +30,8 @@ import kotlin.random.Random
  * @author Takeoff0518
  */
 object Cave : SimpleListenerHost() {
+    private val caveTimer = CDTimer(CDTime)
+
     @EventHandler(priority = EventPriority.LOWEST)
     suspend fun GroupMessageEvent.handle() {
         if (message.isCommand("ca")) {
@@ -70,7 +74,7 @@ object Cave : SimpleListenerHost() {
                     return
                 }
             }
-            val cdTime = CaveUtils.checkInterval()
+            val cdTime = caveTimer.tick()
             if (cdTime != -1L) {
                 group.sendMessage("冷却中，剩余 $cdTime 秒")
                 return
