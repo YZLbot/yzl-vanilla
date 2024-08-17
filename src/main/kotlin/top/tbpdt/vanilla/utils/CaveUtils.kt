@@ -489,6 +489,7 @@ object CaveUtils {
      *
      * 在后续的调用中，如果超过冷却时间，返回 `-1`，否则返回剩余时间的秒数。
      */
+    @Deprecated("改用 top.tbpdt.utils.CDTimer")
     fun checkInterval(): Long {
         val currentTime = System.currentTimeMillis()
         val isFirst = lastCalledTime == 0L
