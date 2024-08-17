@@ -3,6 +3,7 @@ package top.tbpdt.vanilla
 import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
+import net.mamoe.mirai.event.events.GroupEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.MessageEvent
 import top.tbpdt.configer.GlobalConfig.admin
@@ -91,6 +92,17 @@ object Blacklist : SimpleListenerHost() {
             if (sender.id in userBlacklist) {
                 intercept()
             }
+        }
+    }
+
+    fun GroupEvent.onBlacklist(){
+        if(this is GroupMessageEvent){
+            if (((sender.id in admin && !message.isCommand(""))) || message.isCommand("censor")) {
+                return
+            }
+        }
+        if (group.id in groupBlacklist) {
+            intercept()
         }
     }
 }
