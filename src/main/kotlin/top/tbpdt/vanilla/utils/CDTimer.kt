@@ -6,8 +6,8 @@ package top.tbpdt.vanilla.utils
  * @author Takeoff0518
  * @param cdTime 冷却时间 (ms)
  */
-class CDTimer(private val cdTime: Long) {
-    private var lastCalledTime = 0L
+class CDTimer(var cdTime: Long) {
+    var lastCalledTime = 0L
 
     /**
      * 检查冷却时间

@@ -35,6 +35,9 @@ object AdminHandler : SimpleListenerHost() {
                 AutoPicsConfig.reload()
                 BlacklistConfig.reload()
                 AutoPics.initPaths()
+                // 复位计时器
+                Cave.caveTimer.cdTime = CaveConfig.CDTime
+                Cave.caveTimer.lastCalledTime = 0
                 subject.sendMessage("重载配置成功~")
             } catch (e: Exception) {
                 subject.sendMessage("重载配置失败！\n$e")

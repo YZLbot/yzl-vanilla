@@ -30,7 +30,7 @@ import kotlin.random.Random
  * @author Takeoff0518
  */
 object Cave : SimpleListenerHost() {
-    private val caveTimer = CDTimer(CDTime)
+    val caveTimer = CDTimer(CDTime)
 
     @EventHandler(priority = EventPriority.LOWEST)
     suspend fun GroupMessageEvent.handle() {
