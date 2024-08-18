@@ -11,4 +11,7 @@ object AutoPicsConfig : AutoSavePluginConfig("AutoPicsConfig") {
     // k = regex, v = path
     @ValueDescription("文件夹绝对路径: 命中正则表达式")
     val regexMap: Map<String, String> by value(mapOf("^37fb4os8dfh4bf7$" to "D:\\examples"))
+
+    @ValueDescription("冷却时间 (ms)")
+    val CDTime: Long by value(4L)
 }

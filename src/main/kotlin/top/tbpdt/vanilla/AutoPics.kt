@@ -6,13 +6,18 @@ import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import top.tbpdt.vanilla.PluginMain.logger
+import top.tbpdt.vanilla.configer.AutoPicsConfig.CDTime
 import top.tbpdt.vanilla.configer.AutoPicsConfig.regexMap
+import top.tbpdt.vanilla.utils.CDTimer
 import java.io.File
 
 /**
  * @author Takeoff0518
  */
 object AutoPics : SimpleListenerHost() {
+
+    val autoPicsTimer = CDTimer(CDTime)
+
     // k = regex, v = files
     val pathMap: MutableMap<Regex, List<File>> = mutableMapOf()
     fun initPaths() {
@@ -41,6 +46,11 @@ object AutoPics : SimpleListenerHost() {
         val sourceMsg = message.serializeToMiraiCode().trim()
         for (i in pathMap) {
             if (i.key.matches(sourceMsg)) {
+                val cdTime = autoPicsTimer.tick()
+                if (cdTime != -1L) {
+                    group.sendMessage("冷却中，剩余 $cdTime 秒")
+                    return
+                }
                 group.sendImage(i.value.random())
             }
         }
