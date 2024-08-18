@@ -53,6 +53,9 @@ object Account : SimpleListenerHost() {
             group.sendMessage(message.quote() + result)
         }
         if (message.isCommand("sign") || message.getPlainText().trim().startsWith("签到")) {
+            if (group.id in GlobalConfig.signBlacklistGroups) {
+                return
+            }
             initUserAccount(sender.id, sender.nick)
             val (totalSignDays, continuousSignDays) = sign(sender.id)
             if (totalSignDays == -1) {

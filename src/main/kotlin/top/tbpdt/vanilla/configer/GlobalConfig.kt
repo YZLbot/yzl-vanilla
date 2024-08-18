@@ -84,4 +84,12 @@ object GlobalConfig : AutoSavePluginConfig("Config") {
         """
     )
     val groupMemberLimit: Int by value(10)
+
+    // especially for group 171863776
+    @ValueDescription(
+        """
+        禁用签到的群
+        """
+    )
+    val signBlacklistGroups: Set<Long> by value(setOf(12345L, 171863776L))
 }
