@@ -36,6 +36,13 @@ object GlobalConfig : AutoSavePluginConfig("Config") {
 
     @ValueDescription(
         """
+        自动广播邀请信息
+        """
+    )
+    val announceInviteEvent: Boolean by value(true)
+
+    @ValueDescription(
+        """
         自动同意拉拉群
         """
     )

@@ -7,6 +7,7 @@ import net.mamoe.mirai.event.SimpleListenerHost
 import net.mamoe.mirai.event.events.BotInvitedJoinGroupRequestEvent
 import net.mamoe.mirai.event.events.NewFriendRequestEvent
 import top.tbpdt.configer.GlobalConfig
+import top.tbpdt.configer.GlobalConfig.announceInviteEvent
 import top.tbpdt.configer.GlobalConfig.autoAcceptInvitedJoinGroupRequest
 import top.tbpdt.configer.GlobalConfig.autoAcceptNewFriendRequest
 import top.tbpdt.configer.GlobalConfig.joinGroupExperienceLimit
@@ -29,10 +30,11 @@ object InviteProcessor : SimpleListenerHost() {
             |来自群：${this.fromGroup}(${this.fromGroupId})
         """.trimMargin()
         if (!autoAcceptNewFriendRequest) {
-            bot.getGroup(GlobalConfig.group)?.sendMessage("由于配置禁用自动加好友，已回绝加好友请求~\n$textTemplate")
+            if (announceInviteEvent) bot.getGroup(GlobalConfig.group)
+                ?.sendMessage("由于配置禁用自动加好友，已回绝加好友请求~\n$textTemplate")
         }
         if (queryExperience(fromId) < newFriendExperienceLimit) {
-            bot.getGroup(GlobalConfig.group)
+            if (announceInviteEvent) bot.getGroup(GlobalConfig.group)
                 ?.sendMessage("由于经验限制 (${queryExperience(fromId)} < $newFriendExperienceLimit)，已回绝加好友请求~\n$textTemplate")
             return
         }
@@ -44,7 +46,7 @@ object InviteProcessor : SimpleListenerHost() {
         } else {
             logger.warning("由于好友为空，加群提醒发送失败！")
         }
-        bot.getGroup(GlobalConfig.group)?.sendMessage("已同意加好友请求~\n$textTemplate")
+        if (announceInviteEvent) bot.getGroup(GlobalConfig.group)?.sendMessage("已同意加好友请求~\n$textTemplate")
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -53,21 +55,23 @@ object InviteProcessor : SimpleListenerHost() {
             |邀请者：${this.invitorNick}(${this.invitorId})
             |目标群：${this.groupName}(${this.groupId})
         """.trimMargin()
-        if(invitorId in GlobalConfig.admin){
+        if (invitorId in GlobalConfig.admin) {
             accept()
-            bot.getGroup(GlobalConfig.group)?.sendMessage("已同意拉群请求~\n$textTemplate")
+            if (announceInviteEvent)
+                bot.getGroup(GlobalConfig.group)?.sendMessage("已同意拉群请求~\n$textTemplate")
         }
         if (!autoAcceptInvitedJoinGroupRequest) {
-            bot.getGroup(GlobalConfig.group)?.sendMessage("由于配置禁用自动拉群，已回绝拉群请求~\n$textTemplate")
+            if (announceInviteEvent) bot.getGroup(GlobalConfig.group)
+                ?.sendMessage("由于配置禁用自动拉群，已回绝拉群请求~\n$textTemplate")
             return
         }
         if (queryExperience(invitorId) < joinGroupExperienceLimit) {
-            bot.getGroup(GlobalConfig.group)
+            if (announceInviteEvent) bot.getGroup(GlobalConfig.group)
                 ?.sendMessage("由于经验限制 (${queryExperience(invitorId)} < $joinGroupExperienceLimit)，已回绝拉群请求~\n$textTemplate")
             return
         }
         if (queryMoney(invitorId) < moneyLimit) {
-            bot.getGroup(GlobalConfig.group)
+            if (announceInviteEvent) bot.getGroup(GlobalConfig.group)
                 ?.sendMessage("由于经济限制 (${queryMoney(invitorId)} < $moneyLimit)，已回绝拉群请求~\n$textTemplate")
             return
         }
@@ -76,7 +80,8 @@ object InviteProcessor : SimpleListenerHost() {
         if (group != null && invitorId in group.members) {
             delay((1000L..5000L).random())
             accept()
-            bot.getGroup(GlobalConfig.group)?.sendMessage("已同意拉群请求，消耗 $moneyLimit li~\n$textTemplate")
+            if (announceInviteEvent) bot.getGroup(GlobalConfig.group)
+                ?.sendMessage("已同意拉群请求，消耗 $moneyLimit li~\n$textTemplate")
 //            delay((1000L..5000L).random())
 //            val invitedGroup = bot.getGroup(groupId)!!
 //            if (invitedGroup.members.size < groupMemberLimit) {
@@ -87,7 +92,8 @@ object InviteProcessor : SimpleListenerHost() {
 //            }
         } else if (invitorId in bot.friends) {
             bot.getFriend(invitorId)?.sendMessage("请在加入饲养群 ${GlobalConfig.group} 后再次尝试拉群~")
-            bot.getGroup(GlobalConfig.group)?.sendMessage("由于未加饲养群，已回绝拉群请求~\n$textTemplate")
+            if (announceInviteEvent) bot.getGroup(GlobalConfig.group)
+                ?.sendMessage("由于未加饲养群，已回绝拉群请求~\n$textTemplate")
         }
     }
 }
