@@ -27,10 +27,9 @@ mirai {
 }
 
 dependencies {
-    val overflowVersion = "2.16.0+"
+    val overflowVersion = "1.0+"
     val ktorVersion = "2.3.8"
-    compileOnly("top.mrxiaom:overflow-core-api:$overflowVersion")
-    testConsoleRuntime("top.mrxiaom:overflow-core:$overflowVersion")
+    compileOnly("top.mrxiaom.mirai:overflow-core:$overflowVersion")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("org.xerial:sqlite-jdbc:3.41.2.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
