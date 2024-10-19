@@ -43,6 +43,7 @@ object PluginMain : KotlinPlugin(
         AutoPicsConfig.reload()
         BlacklistConfig.reload()
         logger.info { "正在注册监听器到全局..." }
+        Blacklist.registerTo(globalEventChannel())
         EmojiFetch.registerTo(globalEventChannel())
         AdminHandler.registerTo(globalEventChannel())
         Cave.registerTo(globalEventChannel())
@@ -52,7 +53,6 @@ object PluginMain : KotlinPlugin(
         AutoGroup.registerTo(globalEventChannel())
         ContentCensor.registerTo(globalEventChannel())
         AutoPics.registerTo(globalEventChannel())
-        Blacklist.registerTo(globalEventChannel())
         logger.info { "正在加载数据库" }
         DBUtils.initCaveDB()
         AccountUtils.createTable()
