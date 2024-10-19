@@ -1,12 +1,16 @@
 package top.tbpdt.utils
 
 import net.mamoe.mirai.contact.Contact
+import net.mamoe.mirai.contact.Contact.Companion.uploadImage
 import net.mamoe.mirai.message.code.MiraiCode.deserializeMiraiCode
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.emptyMessageChain
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import top.tbpdt.vanilla.PluginMain.dataFolder
 import top.tbpdt.vanilla.PluginMain.logger
 import top.tbpdt.vanilla.configer.CaveConfig.CDTime
@@ -243,6 +247,7 @@ object CaveUtils {
      * @param url 图片地址（http）
      * @exception Exception 图片下载失败
      */
+    @Deprecated("该方法已经弃用，请使用CaveUtils.downloadImage")
     private fun downloadAndSaveImage(url: String) {
         try {
             val fileName = getFileName(url)
@@ -268,8 +273,11 @@ object CaveUtils {
         return try {
             val connection = URL(url).openConnection() as HttpURLConnection
             connection.requestMethod = "HEAD"
+            connection.connectTimeout = 4120
+            connection.readTimeout = 4120
             val responseCode = connection.responseCode
-            return responseCode == HttpURLConnection.HTTP_OK
+            connection.disconnect()
+            responseCode == HttpURLConnection.HTTP_OK
         } catch (e: Exception) {
             false
         }
@@ -294,6 +302,7 @@ object CaveUtils {
     /**
      * 替换过期的图片（重新上传），并更新回声洞里的图片信息
      */
+    @Deprecated("该方法已经弃用，请使用CaveUtils.addImage")
     suspend fun Comment.replaceExpiredImage(contact: Contact): MessageChain {
         val message = text.deserializeMiraiCode()
         var result = emptyMessageChain()
@@ -325,7 +334,7 @@ object CaveUtils {
                     val updatedImage: Image
                     val imageFile = if (isPicExists(url))
                         File(picPath + File.separator + queryName(url))
-                        else null
+                    else null
 
                     if (imageFile != null) {
                         logger.info("本地已存在该图片（${imageFile.name}），正在尝试上传")
@@ -465,6 +474,89 @@ object CaveUtils {
         }
     }
 
+    /**
+     * 上传回声洞图片
+     */
+    suspend fun Comment.addImage(contact: Contact): MessageChain {
+        val message = text.deserializeMiraiCode()
+        var result = emptyMessageChain()
+        for (i in message) {
+            /*
+            The images' URLs are like
+            https://multimedia.nt.qq.com.cn/download
+            ?appid=1407
+            &fileid=CgozNTQ3MzU5MjI5EhSFWqK1BiXEuHQshJb-W_F2bOx7JRi5ugUg_wooyMqcl4XriAMyBHByb2RQgL2jAQ
+            &spec=0
+            &rkey=CAQSKAB6JWENi5LMsAKnLnJn7TePeitGTSpWvGxAgVSMRrE_9Fauzoqzmus
+            on 2024/10/01
+            and
+            https://multimedia.nt.qq.com.cn/download
+            ?appid=1407
+            &fileid=CgoxOTEwNDY0MDY5EhQN3snd9D1NjwkEbs8HacjSe0aaFRjq-hgg_woosO73loGaiQMyBHByb2RQgL2jAQ
+            &spec=0
+            &rkey=CAESKBkcro_MGujoykuBhn6vH1RAqS-YScuzV5dtspDyjm2LQFznq0Cs-XU
+            on 2024/10/19
+            */
+            if (i is Image) {
+                val imageUrl = i.queryUrl()
+                logger.info("检查图片中，url = $imageUrl")
+                if (isPicExists(imageUrl)) {
+                    result += contact.uploadImage(File(queryName(imageUrl)))
+                    logger.info("图片 ${queryName(imageUrl)} 存在于本地，已插入到消息中")
+                } else {
+                    logger.info("发现未下载的图片，正在下载：$imageUrl")
+                    if (!isHttpFileExists(imageUrl)) {
+                        logger.warning("图片无法从图床上找到，标记为已过期")
+                        result += " [过期的图片] "
+                    } else {
+                        val imageFileName = downloadImage(imageUrl)
+                        addPicture(imageFileName, imageUrl)
+                        logger.info("下载成功，文件名：$imageFileName")
+                        result += i
+                    }
+                }
+            } else {
+                result += i
+            }
+        }
+        if (result != message) {
+            updateCaveComments(caveId, result.serializeToMiraiCode())
+        }
+        return result
+    }
+
+    /**
+     * 下载图片，基于 okhttp
+     * @return 下载图片的文件名
+     */
+    suspend fun downloadImage(url: String): String {
+        val client = OkHttpClient()
+        logger.info("尝试下载 $url")
+
+        val request = Request.Builder().url(url).build()
+        var fileName: String
+        client.newCall(request).execute().use { response: Response ->
+            if (!response.isSuccessful) throw IOException("Unexpected code $response")
+
+            val contentType = response.header("Content-Type")
+            val extension = when {
+                contentType?.contains("image/jpeg") == true -> "jpg"
+                contentType?.contains("image/png") == true -> "png"
+                contentType?.contains("image/gif") == true -> "gif"
+                contentType?.contains("image/webp") == true -> "webp"
+                else -> "jpg"
+            }
+
+            fileName = "${getSHA256(url)}.$extension"
+            FileOutputStream(File(picPath + fileName)).use { outputStream ->
+                response.body?.byteStream()?.use { inputStream ->
+                    inputStream.copyTo(outputStream)
+                } ?: throw IOException("Response body is null")
+            }
+            logger.info("图片已保存为 $picPath$fileName")
+        }
+        return fileName
+    }
 
     data class Comment(
         val caveId: Int,

@@ -40,4 +40,5 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-client-json:$ktorVersion")
     implementation("io.ktor:ktor-client-serialization:$ktorVersion")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0") // try some okhttp
 }

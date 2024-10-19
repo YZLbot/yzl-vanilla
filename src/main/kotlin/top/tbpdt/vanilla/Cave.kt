@@ -10,10 +10,10 @@ import net.mamoe.mirai.message.data.*
 import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.utils.AccountUtils
 import top.tbpdt.utils.CaveUtils
+import top.tbpdt.utils.CaveUtils.addImage
 import top.tbpdt.utils.CaveUtils.getCommentCount
 import top.tbpdt.utils.CaveUtils.loadCaveIds
 import top.tbpdt.utils.CaveUtils.loadComments
-import top.tbpdt.utils.CaveUtils.replaceExpiredImage
 import top.tbpdt.utils.CaveUtils.updatePickCount
 import top.tbpdt.utils.MessageUtils.getRemovedPrefixCommand
 import top.tbpdt.utils.MessageUtils.isCommand
@@ -82,7 +82,7 @@ object Cave : SimpleListenerHost() {
             if (AccountUtils.addMoney(sender.id, -CaveConfig.addCost)) {
                 val id = getCommentCount() + 1
                 CaveUtils.saveComment(id, text, sender.id, sender.nick, group.id, group.name)
-                loadComments(id).first().replaceExpiredImage(group)
+                loadComments(id).first().addImage(group)
                 AccountUtils.addMoney(sender.id, -CaveConfig.addCost)
                 group.sendMessage("回声洞 #${id} 添加成功，消耗 ${CaveConfig.addCost} li~")
             } else {
@@ -102,7 +102,7 @@ object Cave : SimpleListenerHost() {
                  */
                 var result = emptyMessageChain()
                 result += PlainText("回声洞 #${i.caveId}\n\n")
-                result += i.replaceExpiredImage(group)
+                result += i.addImage(group)
                 result += PlainText("\n\n--${i.senderNick}")
                 group.sendMessage(result)
                 updatePickCount(randomId)
@@ -131,7 +131,7 @@ object Cave : SimpleListenerHost() {
             for (i in comment) {
                 var result = emptyMessageChain()
                 result += PlainText("回声洞 #${i.caveId}\n\n")
-                result += i.replaceExpiredImage(group)
+                result += i.addImage(group)
                 result += PlainText("\n\n--${i.senderNick}(${i.senderId})\n")
                 result += PlainText("from ${i.groupNick}(${i.groupId})\n")
                 result += PlainText("已被捡起 ${i.pickCount} 次\n")
@@ -162,7 +162,7 @@ object Cave : SimpleListenerHost() {
             for (i in comment) {
                 var result = emptyMessageChain()
                 result += PlainText("回声洞 #${i.caveId}\n\n")
-                result += i.replaceExpiredImage(group)
+                result += i.addImage(group)
                 result += PlainText("\n\n--${i.senderNick}(${i.senderId})\n")
                 result += PlainText("from ${i.groupNick}(${i.groupId})\n")
                 result += PlainText("已被捡起 ${i.pickCount} 次\n")
