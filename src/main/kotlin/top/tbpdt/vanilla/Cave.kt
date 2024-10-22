@@ -175,7 +175,7 @@ object Cave : SimpleListenerHost() {
                     comment.map { it.caveId }.filter { it !in CaveConfig.caveBlackList }
                 }"
             )
-            val forwardResult = ForwardMessageBuilder(group)
+            var forwardResult = ForwardMessageBuilder(group)
             for (i in comment) {
                 var result = emptyMessageChain()
                 result += PlainText("回声洞 #${i.caveId}\n\n")
@@ -189,7 +189,8 @@ object Cave : SimpleListenerHost() {
                 // 超长分条发送
                 if (forwardResult.size > 20) {
                     group.sendMessage(forwardResult.build())
-                    forwardResult.clear()
+                    delay(10000)
+                    forwardResult = ForwardMessageBuilder(group)
                 }
             }
             group.sendMessage(forwardResult.build())
