@@ -20,6 +20,7 @@ import top.tbpdt.utils.MessageUtils.isCommand
 import top.tbpdt.vanilla.PluginMain.save
 import top.tbpdt.vanilla.configer.CaveConfig
 import top.tbpdt.vanilla.configer.CaveConfig.CDTime
+import top.tbpdt.vanilla.configer.CaveConfig.sendSearchResult
 import top.tbpdt.vanilla.utils.CDTimer
 import top.tbpdt.vanilla.utils.CensorUtils.checkCensor
 import java.text.SimpleDateFormat
@@ -175,25 +176,27 @@ object Cave : SimpleListenerHost() {
                     comment.map { it.caveId }.filter { it !in CaveConfig.caveBlackList }
                 }"
             )
-            var forwardResult = ForwardMessageBuilder(group)
-            for (i in comment) {
-                var result = emptyMessageChain()
-                result += PlainText("回声洞 #${i.caveId}\n\n")
-                result += i.addImage(group)
-                result += PlainText("\n\n--${i.senderNick}(${i.senderId})\n")
-                result += PlainText("from ${i.groupNick}(${i.groupId})\n")
-                result += PlainText("已被捡起 ${i.pickCount} 次\n")
-                result += PlainText("at " + SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
-                updatePickCount(i.caveId)
-                forwardResult.add(bot.id, "#" + i.caveId, result)
-                // 超长分条发送
-                if (forwardResult.size > 20) {
-                    group.sendMessage(forwardResult.build())
-                    delay(10000)
-                    forwardResult = ForwardMessageBuilder(group)
+            if (sendSearchResult) {
+                var forwardResult = ForwardMessageBuilder(group)
+                for (i in comment) {
+                    var result = emptyMessageChain()
+                    result += PlainText("回声洞 #${i.caveId}\n\n")
+                    result += i.addImage(group)
+                    result += PlainText("\n\n--${i.senderNick}(${i.senderId})\n")
+                    result += PlainText("from ${i.groupNick}(${i.groupId})\n")
+                    result += PlainText("已被捡起 ${i.pickCount} 次\n")
+                    result += PlainText("at " + SimpleDateFormat("yy/MM/dd HH:mm:ss").format(i.date))
+                    updatePickCount(i.caveId)
+                    forwardResult.add(bot.id, "#" + i.caveId, result)
+                    // 超长分条发送
+                    if (forwardResult.size > 20) {
+                        group.sendMessage(forwardResult.build())
+                        delay(10000)
+                        forwardResult = ForwardMessageBuilder(group)
+                    }
                 }
+                group.sendMessage(forwardResult.build())
             }
-            group.sendMessage(forwardResult.build())
         }
 //        if (message.isCommand("rc") && (sender.id in GlobalConfig.admin)) {
 //            group.sendMessage("下载中……")

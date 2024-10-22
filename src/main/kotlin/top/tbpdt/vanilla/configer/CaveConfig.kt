@@ -34,4 +34,7 @@ object CaveConfig : AutoSavePluginConfig("CaveConfig") {
 
     @ValueDescription("最多投稿字符数")
     val maxCharCount: Int by value(500)
+
+    @ValueDescription("启用查找回声洞结果发送")
+    val sendSearchResult: Boolean by value(false)
 }
