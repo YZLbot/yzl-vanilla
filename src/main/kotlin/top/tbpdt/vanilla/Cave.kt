@@ -90,7 +90,24 @@ object Cave : SimpleListenerHost() {
             }
         }
         if (message.isCommand("cq") || message.isCommand("捡")) {
-            val randomId = (1..getCommentCount()).filter { it !in CaveConfig.caveBlackList }.random()
+            val commentCount = getCommentCount()
+            val hBound = commentCount - 100 + 1
+//            val randomId = (1..getCommentCount()).filter { it !in CaveConfig.caveBlackList }.random()
+            var randomId = if (hBound < 1) {
+                (1..commentCount).filter { it !in CaveConfig.caveBlackList }.randomOrNull()
+            } else if ((1..10).random() <= 3) { // 30%
+                (hBound..commentCount).filter { it !in CaveConfig.caveBlackList }.randomOrNull()
+            } else {
+                (1..commentCount).filter { it !in CaveConfig.caveBlackList }.randomOrNull()
+            }
+            if (randomId == null) {
+                // try again
+                randomId = (1..commentCount).filter { it !in CaveConfig.caveBlackList }.randomOrNull()
+                if (randomId == null) {
+                    group.sendMessage("唔姆，一个回声洞也没有捡到……")
+                    return
+                }
+            }
             val comment = loadComments(randomId)
             for (i in comment) {
                 /*
