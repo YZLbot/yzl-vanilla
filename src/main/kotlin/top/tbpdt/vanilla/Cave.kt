@@ -194,11 +194,11 @@ object Cave : SimpleListenerHost() {
             }
             group.sendMessage(forwardResult.build())
         }
-        if (message.isCommand("rc") && (sender.id in GlobalConfig.admin)) {
-            group.sendMessage("下载中……")
-            val (totalCount, successCount) = CaveUtils.downloadAllPictures()
-            group.sendMessage("下载结束~\n共向服务器请求 $totalCount 张，成功下载 $successCount 张")
-        }
+//        if (message.isCommand("rc") && (sender.id in GlobalConfig.admin)) {
+//            group.sendMessage("下载中……")
+//            val (totalCount, successCount) = CaveUtils.downloadAllPictures()
+//            group.sendMessage("下载结束~\n共向服务器请求 $totalCount 张，成功下载 $successCount 张")
+//        }
         if (message.isCommand("mycave")) {
             val queryId = message.getRemovedPrefixCommand("mycave").toLongOrNull()
             val userId = queryId ?: sender.id
