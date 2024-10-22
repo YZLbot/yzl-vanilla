@@ -37,15 +37,15 @@ object ContentCensor : SimpleListenerHost() {
             if (group.id in muteTime && muteTime.getValue(group.id) > 0) {
                 sender.mute(muteTime.getValue(group.id))
                 group.sendMessage(
-                    "群员 ${sender.nameCardOrNick}(${sender.id}) 触发消息正则审查\n" +
+                    "群员 ${sender.nameCardOrNick}(${sender.id}) 触发敏感词检测\n" +
                             "已禁言 ${muteTime.getValue(group.id)} 秒！"
                 )
             } else {
-                group.sendMessage("群员 ${sender.nameCardOrNick}(${sender.id}) 触发消息正则审查")
+                group.sendMessage("群员 ${sender.nameCardOrNick}(${sender.id}) 触发敏感词检测")
             }
             if (group.owner.id in bot.friends) {
                 group.owner.sendMessage(
-                    "有群员触发了消息正则审查：\n" +
+                    "有群员触发了敏感词检测：\n" +
                             "群聊：${group.name}(${group.id})\n" +
                             "群员：${sender.nameCardOrNick}(${sender.id})\n" +
                             "命中：${match}\n" +
