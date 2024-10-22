@@ -6,6 +6,7 @@ import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
 import net.mamoe.mirai.event.events.GroupMessageEvent
+import net.mamoe.mirai.message.code.MiraiCode.deserializeMiraiCode
 import net.mamoe.mirai.message.data.*
 import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.utils.AccountUtils
@@ -15,6 +16,7 @@ import top.tbpdt.utils.CaveUtils.getCommentCount
 import top.tbpdt.utils.CaveUtils.loadCaveIds
 import top.tbpdt.utils.CaveUtils.loadComments
 import top.tbpdt.utils.CaveUtils.updatePickCount
+import top.tbpdt.utils.MessageUtils.getPlainText
 import top.tbpdt.utils.MessageUtils.getRemovedPrefixCommand
 import top.tbpdt.utils.MessageUtils.isCommand
 import top.tbpdt.vanilla.PluginMain.save
@@ -53,12 +55,12 @@ object Cave : SimpleListenerHost() {
                 group.sendMessage("暂不支持图片的投稿哦~")
                 return
             }
-            if (text.length > CaveConfig.maxCharCount) {
+            if (text.deserializeMiraiCode().getPlainText().length > CaveConfig.maxCharCount) {
                 group.sendMessage("投稿内容超出最多字符数限制 (${text.length} > ${CaveConfig.maxCharCount})，请尝试缩减内容后再进行投稿哦~")
                 return
             }
             if (CaveConfig.enableCensor) {
-                val match = checkCensor(text)
+                val match = checkCensor(text.deserializeMiraiCode().getPlainText())
                 if (match != null) {
                     group.sendMessage(At(sender) + "检测到投稿内容带有敏感词，已回绝投稿，请在机器人向你发送的私信中查看具体内容~")
                     if (sender.id in bot.friends) {
