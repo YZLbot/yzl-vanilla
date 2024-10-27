@@ -14,11 +14,13 @@ import top.tbpdt.utils.AccountUtils
 import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.DBUtils
 import top.tbpdt.utils.LogStrImage
+import top.tbpdt.vanilla.Status.scheduleHourlyTask
 import top.tbpdt.vanilla.configer.AutoPicsConfig
 import top.tbpdt.vanilla.configer.BlacklistConfig
 import top.tbpdt.vanilla.configer.CaveConfig
 import top.tbpdt.vanilla.configer.CensorConfig
 import top.tbpdt.vanilla.utils.CensorUtils
+import top.tbpdt.vanilla.utils.StatusRecorder
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
@@ -42,6 +44,7 @@ object PluginMain : KotlinPlugin(
         CensorConfig.reload()
         AutoPicsConfig.reload()
         BlacklistConfig.reload()
+        StatusRecorder.reload()
         logger.info { "正在注册监听器到全局..." }
         Blacklist.registerTo(globalEventChannel())
         EmojiFetch.registerTo(globalEventChannel())
@@ -53,12 +56,17 @@ object PluginMain : KotlinPlugin(
         AutoGroup.registerTo(globalEventChannel())
         ContentCensor.registerTo(globalEventChannel())
         AutoPics.registerTo(globalEventChannel())
+        Status.registerTo(globalEventChannel())
         logger.info { "正在加载数据库" }
         DBUtils.initCaveDB()
         AccountUtils.createTable()
         CaveUtils.createTable()
         CensorUtils.initCensorDict()
         AutoPics.initPaths()
+        scheduleHourlyTask{
+            StatusRecorder.save()
+            logger.info { "收发统计数据已保存~" }
+        }
     }
 
     override fun onDisable() {
@@ -73,6 +81,8 @@ object PluginMain : KotlinPlugin(
         AutoGroup.cancel()
         ContentCensor.cancel()
         AutoPics.cancel()
+        Status.cancel()
+        StatusRecorder.save()
         logger.info { "禁用成功！" }
     }
 

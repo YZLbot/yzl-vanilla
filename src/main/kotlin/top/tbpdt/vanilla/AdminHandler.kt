@@ -15,6 +15,7 @@ import top.tbpdt.vanilla.configer.AutoPicsConfig
 import top.tbpdt.vanilla.configer.BlacklistConfig
 import top.tbpdt.vanilla.configer.CaveConfig
 import top.tbpdt.vanilla.configer.CensorConfig
+import top.tbpdt.vanilla.utils.StatusRecorder
 
 /**
  * @author Takeoff0518
@@ -55,6 +56,7 @@ object AdminHandler : SimpleListenerHost() {
                 CensorConfig.save()
                 AutoPicsConfig.save()
                 BlacklistConfig.save()
+                StatusRecorder.save()
                 subject.sendMessage("强行保存配置成功~")
             } catch (e: Exception) {
                 subject.sendMessage("强行保存配置失败！\n$e")
