@@ -57,13 +57,14 @@ object PluginMain : KotlinPlugin(
         ContentCensor.registerTo(globalEventChannel())
         AutoPics.registerTo(globalEventChannel())
         Status.registerTo(globalEventChannel())
+        EVocalRank.registerTo(globalEventChannel())
         logger.info { "正在加载数据库" }
         DBUtils.initCaveDB()
         AccountUtils.createTable()
         CaveUtils.createTable()
         CensorUtils.initCensorDict()
         AutoPics.initPaths()
-        scheduleHourlyTask{
+        scheduleHourlyTask {
             StatusRecorder.save()
             logger.info { "收发统计数据已保存~" }
         }
@@ -82,6 +83,7 @@ object PluginMain : KotlinPlugin(
         ContentCensor.cancel()
         AutoPics.cancel()
         Status.cancel()
+        EVocalRank.cancel()
         StatusRecorder.save()
         logger.info { "禁用成功！" }
     }
