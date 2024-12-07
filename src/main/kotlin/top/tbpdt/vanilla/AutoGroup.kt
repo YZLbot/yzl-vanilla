@@ -149,7 +149,7 @@ object AutoGroup : SimpleListenerHost() {
         if (randomNum <= superNudge) {
             subject.sendMessage(superNudgeMessage)
             repeat(superNudgeTimes) {
-                from.nudge()
+                from.nudge().sendTo(subject)
                 delay((500L..1000L).random())
             }
             return
@@ -157,7 +157,7 @@ object AutoGroup : SimpleListenerHost() {
         if (randomNum <= counterNudge) {
             subject.sendMessage(counterNudgeMessage.random())
             delay((500L..2000L).random())
-            from.nudge()
+            from.nudge().sendTo(subject)
             delay((500L..2000L).random())
             subject.sendMessage(counterNudgeCompleteMessage.random())
             return
