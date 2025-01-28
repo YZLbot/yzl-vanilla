@@ -13,6 +13,7 @@ import top.tbpdt.utils.AccountUtils
 import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.CaveUtils.addImage
 import top.tbpdt.utils.CaveUtils.getCommentCount
+import top.tbpdt.utils.CaveUtils.getMostFrequentSenderId
 import top.tbpdt.utils.CaveUtils.loadCaveIds
 import top.tbpdt.utils.CaveUtils.loadComments
 import top.tbpdt.utils.CaveUtils.updatePickCount
@@ -45,6 +46,10 @@ object Cave : SimpleListenerHost() {
             val text = message.getRemovedPrefixCommand("ca")
             if (text.isEmpty()) {
                 group.sendMessage("不能添加空信息！")
+                return
+            }
+            if (message.contains(AtAll)) {
+                group.sendMessage("禁止添加@全体成员的回声洞！")
                 return
             }
             if (text.toIntOrNull() != null) {
@@ -247,6 +252,12 @@ object Cave : SimpleListenerHost() {
                     group.sendMessage("移除失败，请通过 .mycave 查看自己投稿过的回声洞哦~")
                 }
             }
+        }
+
+        if (message.isCommand("cr")) {
+            val commentInfo = getMostFrequentSenderId()
+            if(commentInfo!=null)
+            group.sendMessage("回声洞发送最多的人是：${commentInfo.senderNick}(${commentInfo.senderId})，共${commentInfo.senderCount}条")
         }
     }
 
