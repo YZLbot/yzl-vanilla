@@ -67,7 +67,11 @@ object Account : SimpleListenerHost() {
             val userAccount = queryAccount(sender.id).first()
             updateMoney(sender.id, userAccount.money + deltaMoney)
             updateExperience(sender.id, userAccount.experience + deltaExperience)
-            val hitokoto = getHitokoto("d")
+            val hitokoto: MyHitokoto = try {
+                getHitokoto("d")
+            } catch (e: Exception) {
+                MyHitokoto(0, "", "[未获取到一言]", "", "", null, "", 0, 0, "", "", 0)
+            }
             val result = "叮咚~签到成功！\n" +
                     "li：${userAccount.money + deltaMoney}(+$deltaMoney)\n" +
                     "经验：${userAccount.experience + deltaExperience}(+$deltaExperience)\n" +
