@@ -214,41 +214,14 @@ object CaveUtils {
     }
     data class UserCommentInfo(
         val senderId: Long,
-        val senderNick: String,
         val senderCount: Int
     )
-    /**
-     * 回声洞排名
-     */
-    fun getMostFrequentSenderId(): UserCommentInfo? {
-        val query = """
-        SELECT sender_id, sender_nick, COUNT(*) as count
-        FROM cave_comments
-        GROUP BY sender_id, sender_nick
-        ORDER BY count DESC
-        LIMIT 1
-    """.trimIndent()
 
-        DBUtils.connectToDB().use { connection ->
-            connection.prepareStatement(query).use { preparedStatement ->
-                preparedStatement.executeQuery().use { resultSet ->
-                    if (resultSet.next()) {
-                        return UserCommentInfo(
-                            senderId = resultSet.getLong("sender_id"),
-                            senderNick = resultSet.getString("sender_nick"),
-                            senderCount = resultSet.getInt("count")
-                        )
-                    }
-                }
-            }
-        }
-        return null
-    }
     fun getTopFiveSenders(): List<UserCommentInfo> {
         val query = """
-        SELECT sender_id, sender_nick, COUNT(*) as count
+        SELECT sender_id, COUNT(*) as count
         FROM cave_comments
-        GROUP BY sender_id, sender_nick
+        GROUP BY sender_id
         ORDER BY count DESC
         LIMIT 5
     """.trimIndent()
@@ -261,7 +234,6 @@ object CaveUtils {
                         commentInfos.add(
                             UserCommentInfo(
                                 senderId = resultSet.getLong("sender_id"),
-                                senderNick = resultSet.getString("sender_nick"),
                                 senderCount = resultSet.getInt("count")
                             )
                         )

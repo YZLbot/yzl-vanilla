@@ -13,7 +13,6 @@ import top.tbpdt.utils.AccountUtils
 import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.CaveUtils.addImage
 import top.tbpdt.utils.CaveUtils.getCommentCount
-import top.tbpdt.utils.CaveUtils.getMostFrequentSenderId
 import top.tbpdt.utils.CaveUtils.getTopFiveSenders
 import top.tbpdt.utils.CaveUtils.loadCaveIds
 import top.tbpdt.utils.CaveUtils.loadComments
@@ -260,7 +259,7 @@ object Cave : SimpleListenerHost() {
             if (commentInfos.isNotEmpty()) {
                 val messageBuilder = StringBuilder("回声洞排行榜：\n")
                 commentInfos.forEachIndexed { index, commentInfo ->
-                    messageBuilder.append("${index + 1}.${commentInfo.senderNick}(${commentInfo.senderId})，共${commentInfo.senderCount}条\n")
+                    messageBuilder.append("${index + 1}.${AccountUtils.queryNick(commentInfo.senderId)}(${commentInfo.senderId})，共${commentInfo.senderCount}条\n")
                 }
                 group.sendMessage(messageBuilder.toString())
             } else {
