@@ -246,9 +246,14 @@ object CaveUtils {
     }
     fun getTopFiveSenders(): List<UserCommentInfo> {
         val query = """
-        SELECT sender_id, sender_nick, COUNT(*) as count
+        SELECT first_sender.sender_id, first_sender.sender_nick, COUNT(*) as count
         FROM cave_comments
-        GROUP BY sender_id, sender_nick
+        INNER JOIN (
+            SELECT sender_id, MIN(sender_nick) as sender_nick
+            FROM cave_comments
+            GROUP BY sender_id
+        ) first_sender ON cave_comments.sender_id = first_sender.sender_id
+        GROUP BY first_sender.sender_id, first_sender.sender_nick
         ORDER BY count DESC
         LIMIT 5
     """.trimIndent()
@@ -271,6 +276,7 @@ object CaveUtils {
         }
         return commentInfos
     }
+
 
 
     /**
