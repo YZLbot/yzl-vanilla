@@ -244,7 +244,33 @@ object CaveUtils {
         }
         return null
     }
+    fun getTopFiveSenders(): List<UserCommentInfo> {
+        val query = """
+        SELECT sender_id, sender_nick, COUNT(*) as count
+        FROM cave_comments
+        GROUP BY sender_id, sender_nick
+        ORDER BY count DESC
+        LIMIT 5
+    """.trimIndent()
 
+        val commentInfos = mutableListOf<UserCommentInfo>()
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.executeQuery().use { resultSet ->
+                    while (resultSet.next()) {
+                        commentInfos.add(
+                            UserCommentInfo(
+                                senderId = resultSet.getLong("sender_id"),
+                                senderNick = resultSet.getString("sender_nick"),
+                                senderCount = resultSet.getInt("count")
+                            )
+                        )
+                    }
+                }
+            }
+        }
+        return commentInfos
+    }
 
 
     /**

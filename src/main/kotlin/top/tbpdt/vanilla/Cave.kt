@@ -14,6 +14,7 @@ import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.CaveUtils.addImage
 import top.tbpdt.utils.CaveUtils.getCommentCount
 import top.tbpdt.utils.CaveUtils.getMostFrequentSenderId
+import top.tbpdt.utils.CaveUtils.getTopFiveSenders
 import top.tbpdt.utils.CaveUtils.loadCaveIds
 import top.tbpdt.utils.CaveUtils.loadComments
 import top.tbpdt.utils.CaveUtils.updatePickCount
@@ -255,9 +256,16 @@ object Cave : SimpleListenerHost() {
         }
 
         if (message.isCommand("cr")) {
-            val commentInfo = getMostFrequentSenderId()
-            if(commentInfo!=null)
-            group.sendMessage("回声洞发送最多的人是：${commentInfo.senderNick}(${commentInfo.senderId})，共${commentInfo.senderCount}条")
+            val commentInfos = getTopFiveSenders()
+            if (commentInfos.isNotEmpty()) {
+                val messageBuilder = StringBuilder("回声洞排行榜：\n")
+                commentInfos.forEachIndexed { index, commentInfo ->
+                    messageBuilder.append("${index + 1}.${commentInfo.senderNick}(${commentInfo.senderId})，共${commentInfo.senderCount}条\n")
+                }
+                group.sendMessage(messageBuilder.toString())
+            } else {
+                group.sendMessage("唔呣，当前还没有人投稿过回声洞呢")
+            }
         }
     }
 
