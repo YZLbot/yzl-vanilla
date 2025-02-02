@@ -11,10 +11,7 @@ import top.tbpdt.configer.MuteMeConfig
 import top.tbpdt.utils.MessageUtils.isCommand
 import top.tbpdt.vanilla.PluginMain.reload
 import top.tbpdt.vanilla.PluginMain.save
-import top.tbpdt.vanilla.configer.AutoPicsConfig
-import top.tbpdt.vanilla.configer.BlacklistConfig
-import top.tbpdt.vanilla.configer.CaveConfig
-import top.tbpdt.vanilla.configer.CensorConfig
+import top.tbpdt.vanilla.configer.*
 import top.tbpdt.vanilla.utils.StatusRecorder
 
 /**
@@ -35,6 +32,7 @@ object AdminHandler : SimpleListenerHost() {
                 CensorConfig.reload()
                 AutoPicsConfig.reload()
                 BlacklistConfig.reload()
+                OllamaConfig.reload()
                 AutoPics.initPaths()
                 // 复位计时器
                 Cave.caveTimer.cdTime = CaveConfig.CDTime
@@ -57,6 +55,7 @@ object AdminHandler : SimpleListenerHost() {
                 AutoPicsConfig.save()
                 BlacklistConfig.save()
                 StatusRecorder.save()
+                OllamaConfig.save()
                 subject.sendMessage("强行保存配置成功~")
             } catch (e: Exception) {
                 subject.sendMessage("强行保存配置失败！\n$e")

@@ -27,7 +27,7 @@ mirai {
 }
 
 dependencies {
-    val overflowVersion = "1.0+"
+    val overflowVersion = "1.0.2.549-29bc0c5-SNAPSHOT"
     val ktorVersion = "2.3.8"
     compileOnly("top.mrxiaom.mirai:overflow-core:$overflowVersion")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
@@ -40,4 +40,5 @@ dependencies {
     implementation("io.ktor:ktor-client-json:$ktorVersion")
     implementation("io.ktor:ktor-client-serialization:$ktorVersion")
     implementation("com.squareup.okhttp3:okhttp:4.12.0") // try some okhttp
+    implementation("io.github.ollama4j:ollama4j:1.0.93")
 }

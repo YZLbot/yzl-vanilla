@@ -15,10 +15,7 @@ import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.DBUtils
 import top.tbpdt.utils.LogStrImage
 import top.tbpdt.vanilla.Status.scheduleHourlyTask
-import top.tbpdt.vanilla.configer.AutoPicsConfig
-import top.tbpdt.vanilla.configer.BlacklistConfig
-import top.tbpdt.vanilla.configer.CaveConfig
-import top.tbpdt.vanilla.configer.CensorConfig
+import top.tbpdt.vanilla.configer.*
 import top.tbpdt.vanilla.utils.CensorUtils
 import top.tbpdt.vanilla.utils.StatusRecorder
 
@@ -45,6 +42,7 @@ object PluginMain : KotlinPlugin(
         AutoPicsConfig.reload()
         BlacklistConfig.reload()
         StatusRecorder.reload()
+        OllamaConfig.reload()
         logger.info { "正在注册监听器到全局..." }
         Blacklist.registerTo(globalEventChannel())
         EmojiFetch.registerTo(globalEventChannel())
@@ -58,6 +56,7 @@ object PluginMain : KotlinPlugin(
         AutoPics.registerTo(globalEventChannel())
         Status.registerTo(globalEventChannel())
         EVocalRank.registerTo(globalEventChannel())
+        Ollama.registerTo(globalEventChannel())
         logger.info { "正在加载数据库" }
         DBUtils.initCaveDB()
         AccountUtils.createTable()
@@ -84,6 +83,7 @@ object PluginMain : KotlinPlugin(
         AutoPics.cancel()
         Status.cancel()
         EVocalRank.cancel()
+        Ollama.cancel()
         StatusRecorder.save()
         logger.info { "禁用成功！" }
     }
