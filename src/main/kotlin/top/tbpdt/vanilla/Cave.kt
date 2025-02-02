@@ -13,6 +13,8 @@ import top.tbpdt.utils.AccountUtils
 import top.tbpdt.utils.CaveUtils
 import top.tbpdt.utils.CaveUtils.addImage
 import top.tbpdt.utils.CaveUtils.getCommentCount
+import top.tbpdt.utils.CaveUtils.getMostFrequentSenderId
+import top.tbpdt.utils.CaveUtils.getTopFiveSenders
 import top.tbpdt.utils.CaveUtils.loadCaveIds
 import top.tbpdt.utils.CaveUtils.loadComments
 import top.tbpdt.utils.CaveUtils.updatePickCount
@@ -45,6 +47,10 @@ object Cave : SimpleListenerHost() {
             val text = message.getRemovedPrefixCommand("ca")
             if (text.isEmpty()) {
                 group.sendMessage("不能添加空信息！")
+                return
+            }
+            if (message.contains(AtAll)) {
+                group.sendMessage("禁止添加@全体成员的回声洞！")
                 return
             }
             if (text.toIntOrNull() != null) {
@@ -246,6 +252,19 @@ object Cave : SimpleListenerHost() {
                 } else {
                     group.sendMessage("移除失败，请通过 .mycave 查看自己投稿过的回声洞哦~")
                 }
+            }
+        }
+
+        if (message.isCommand("cr")) {
+            val commentInfos = getTopFiveSenders()
+            if (commentInfos.isNotEmpty()) {
+                val messageBuilder = StringBuilder("回声洞排行榜：\n")
+                commentInfos.forEachIndexed { index, commentInfo ->
+                    messageBuilder.append("${index + 1}.${commentInfo.senderNick}(${commentInfo.senderId})，共${commentInfo.senderCount}条\n")
+                }
+                group.sendMessage(messageBuilder.toString())
+            } else {
+                group.sendMessage("唔呣，当前还没有人投稿过回声洞呢")
             }
         }
     }

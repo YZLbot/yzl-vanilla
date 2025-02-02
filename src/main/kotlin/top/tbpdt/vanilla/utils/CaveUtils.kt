@@ -212,6 +212,66 @@ object CaveUtils {
             }
         }
     }
+    data class UserCommentInfo(
+        val senderId: Long,
+        val senderNick: String,
+        val senderCount: Int
+    )
+    /**
+     * 回声洞排名
+     */
+    fun getMostFrequentSenderId(): UserCommentInfo? {
+        val query = """
+        SELECT sender_id, sender_nick, COUNT(*) as count
+        FROM cave_comments
+        GROUP BY sender_id, sender_nick
+        ORDER BY count DESC
+        LIMIT 1
+    """.trimIndent()
+
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.executeQuery().use { resultSet ->
+                    if (resultSet.next()) {
+                        return UserCommentInfo(
+                            senderId = resultSet.getLong("sender_id"),
+                            senderNick = resultSet.getString("sender_nick"),
+                            senderCount = resultSet.getInt("count")
+                        )
+                    }
+                }
+            }
+        }
+        return null
+    }
+    fun getTopFiveSenders(): List<UserCommentInfo> {
+        val query = """
+        SELECT sender_id, sender_nick, COUNT(*) as count
+        FROM cave_comments
+        GROUP BY sender_id, sender_nick
+        ORDER BY count DESC
+        LIMIT 5
+    """.trimIndent()
+
+        val commentInfos = mutableListOf<UserCommentInfo>()
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.executeQuery().use { resultSet ->
+                    while (resultSet.next()) {
+                        commentInfos.add(
+                            UserCommentInfo(
+                                senderId = resultSet.getLong("sender_id"),
+                                senderNick = resultSet.getString("sender_nick"),
+                                senderCount = resultSet.getInt("count")
+                            )
+                        )
+                    }
+                }
+            }
+        }
+        return commentInfos
+    }
+
 
     /**
      * 获取文件扩展名。如果没有则用 `.png` 替代
