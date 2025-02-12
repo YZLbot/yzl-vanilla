@@ -41,7 +41,6 @@ object PluginMain : KotlinPlugin(
         CensorConfig.reload()
         AutoPicsConfig.reload()
         BlacklistConfig.reload()
-        StatusRecorder.reload()
         OllamaConfig.reload()
         logger.info { "正在注册监听器到全局..." }
         Blacklist.registerTo(globalEventChannel())
@@ -61,10 +60,11 @@ object PluginMain : KotlinPlugin(
         DBUtils.initCaveDB()
         AccountUtils.createTable()
         CaveUtils.createTable()
+        StatusRecorder.createTable()
         CensorUtils.initCensorDict()
         AutoPics.initPaths()
         scheduleHourlyTask {
-            StatusRecorder.save()
+            Status.update()
             logger.info { "收发统计数据已保存~" }
         }
     }
@@ -84,7 +84,6 @@ object PluginMain : KotlinPlugin(
         Status.cancel()
         EVocalRank.cancel()
         Ollama.cancel()
-        StatusRecorder.save()
         logger.info { "禁用成功！" }
     }
 

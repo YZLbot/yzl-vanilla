@@ -24,7 +24,9 @@ import top.tbpdt.utils.MessageUtils.getPlainText
 import top.tbpdt.utils.MessageUtils.getRemovedPrefixCommand
 import top.tbpdt.utils.MessageUtils.isCommand
 import top.tbpdt.utils.MessageUtils.parseCommand
+import top.tbpdt.vanilla.utils.StatusRecorder
 import java.sql.Date
+import java.time.LocalDate
 
 /**
  * @author Takeoff0518
@@ -72,14 +74,16 @@ object Account : SimpleListenerHost() {
             } catch (e: Exception) {
                 MyHitokoto(0, "", "[未获取到一言]", "", "", null, "", 0, 0, "", "", 0)
             }
-            val result = "叮咚~签到成功！\n" +
-                    "li：${userAccount.money + deltaMoney}(+$deltaMoney)\n" +
-                    "经验：${userAccount.experience + deltaExperience}(+$deltaExperience)\n" +
-                    "已连续签到 $continuousSignDays 天\n" +
-                    "已累计签到 $totalSignDays 天\n" +
-                    "---------------\n" +
-                    "${hitokoto.hitokoto}\n" +
-                    "——${hitokoto.fromWho ?: ""}${if (hitokoto.from == hitokoto.fromWho) "" else "《" + hitokoto.from + "》"}"
+            StatusRecorder.updateSign(Date.valueOf(LocalDate.now()))
+            val result =
+                "叮咚~签到成功！你是今天第 ${StatusRecorder.querySign(Date.valueOf(LocalDate.now()))} 个签到的人~\n" +
+                        "li：${userAccount.money + deltaMoney}(+$deltaMoney)\n" +
+                        "经验：${userAccount.experience + deltaExperience}(+$deltaExperience)\n" +
+                        "已连续签到 $continuousSignDays 天\n" +
+                        "已累计签到 $totalSignDays 天\n" +
+                        "---------------\n" +
+                        "${hitokoto.hitokoto}\n" +
+                        "——${hitokoto.fromWho ?: ""}${if (hitokoto.from == hitokoto.fromWho) "" else "《" + hitokoto.from + "》"}"
             group.sendMessage(message.quote() + result)
         }
         if (message.isCommand("nick")) {

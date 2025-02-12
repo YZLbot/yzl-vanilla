@@ -70,6 +70,20 @@ object DBUtils {
                     )
                     """
                 )
+
+                createTable(
+                    connection,
+                    """
+                    CREATE TABLE IF NOT EXISTS status (
+                        date DATE,
+                        send INT,
+                        receive INT,
+                        sign INT,
+                        nudge INT,
+                        PRIMARY KEY (date)
+                    )
+                    """
+                )
             }
         } catch (e: SQLException) {
             logger.error("数据库创建失败: $e")

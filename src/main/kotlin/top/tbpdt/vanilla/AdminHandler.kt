@@ -12,7 +12,6 @@ import top.tbpdt.utils.MessageUtils.isCommand
 import top.tbpdt.vanilla.PluginMain.reload
 import top.tbpdt.vanilla.PluginMain.save
 import top.tbpdt.vanilla.configer.*
-import top.tbpdt.vanilla.utils.StatusRecorder
 
 /**
  * @author Takeoff0518
@@ -54,7 +53,7 @@ object AdminHandler : SimpleListenerHost() {
                 CensorConfig.save()
                 AutoPicsConfig.save()
                 BlacklistConfig.save()
-                StatusRecorder.save()
+                Status.update()
                 OllamaConfig.save()
                 subject.sendMessage("强行保存配置成功~")
             } catch (e: Exception) {

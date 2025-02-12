@@ -27,6 +27,9 @@ import top.tbpdt.configer.AutoConfig.superNudgeTimes
 import top.tbpdt.utils.MessageUtils.encodeToMiraiCode
 import top.tbpdt.utils.MessageUtils.getPlainText
 import top.tbpdt.vanilla.PluginMain.logger
+import top.tbpdt.vanilla.utils.StatusRecorder
+import java.sql.Date
+import java.time.LocalDate
 
 /**
  * @author Takeoff0518
@@ -145,7 +148,8 @@ object AutoGroup : SimpleListenerHost() {
         if (target.id != bot.id) {
             return
         }
-        val randomNum  = (1..100).random()
+        StatusRecorder.updateNudge(Date.valueOf(LocalDate.now()))
+        val randomNum = (1..100).random()
         if (randomNum <= superNudge) {
             subject.sendMessage(superNudgeMessage)
             repeat(superNudgeTimes) {
@@ -162,6 +166,10 @@ object AutoGroup : SimpleListenerHost() {
             subject.sendMessage(counterNudgeCompleteMessage.random())
             return
         }
-        subject.sendMessage(nudgedReply.random())
+        subject.sendMessage(
+            nudgedReply.random()
+                .replace("%次数%", StatusRecorder.queryNudge(Date.valueOf(LocalDate.now())).toString())
+                .deserializeMiraiCode()
+        )
     }
 }

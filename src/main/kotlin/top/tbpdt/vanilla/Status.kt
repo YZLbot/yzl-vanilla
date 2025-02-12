@@ -5,69 +5,66 @@ import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
 import net.mamoe.mirai.event.events.*
 import top.tbpdt.utils.MessageUtils.isCommand
-import top.tbpdt.vanilla.utils.StatusRecorder.receiveCount
-import top.tbpdt.vanilla.utils.StatusRecorder.sendCount
+import top.tbpdt.vanilla.utils.StatusRecorder.querySendAndReceive
+import top.tbpdt.vanilla.utils.StatusRecorder.updateReceive
+import top.tbpdt.vanilla.utils.StatusRecorder.updateSend
+import java.sql.Date
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
+
 
 /**
  * @author Takeoff0518
  */
-object Status: SimpleListenerHost() {
-    var sendGroupMsgCount: Int = 0
-    var sendFriendMsgCount: Int = 0
-    var receiveGroupMsgCount: Int = 0
-    var receiveFriendMsgCount: Int = 0
+object Status : SimpleListenerHost() {
+    var sendCount: Int = 0
+    var receiveCount: Int = 0
 
-    private fun addSendCount(){
-        val date = LocalDate.now()
-        val dateStr = "${date.year}-${date.monthValue}-${date.dayOfMonth}"
-        sendCount[dateStr] = (sendCount[dateStr] ?: 0) + 1
-    }
-
-    private fun addReceiveCount(){
-        val date = LocalDate.now()
-        val dateStr = "${date.year}-${date.monthValue}-${date.dayOfMonth}"
-        receiveCount[dateStr] = (receiveCount[dateStr] ?: 0) + 1
+    @EventHandler(priority = EventPriority.LOW)
+    fun GroupMessagePostSendEvent.onCount() {
+        sendCount++
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    fun GroupMessagePostSendEvent.onCount(){
-        addSendCount()
-        sendGroupMsgCount ++
+    fun FriendMessagePostSendEvent.onCount() {
+        sendCount++
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    fun FriendMessagePostSendEvent.onCount(){
-        addSendCount()
-        sendFriendMsgCount ++
+    fun GroupMessageEvent.onCount() {
+        receiveCount++
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    fun GroupMessageEvent.onCount(){
-        addReceiveCount()
-        receiveGroupMsgCount ++
+    fun FriendMessageEvent.onCount() {
+        receiveCount++
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    fun FriendMessageEvent.onCount(){
-        addReceiveCount()
-        receiveFriendMsgCount ++
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    suspend fun MessageEvent.onCommand(){
-        if(!message.isCommand("status")){
+    suspend fun MessageEvent.onCommand() {
+        if (!message.isCommand("status")) {
             return
         }
         val date = LocalDate.now()
-        val dateStr = "${date.year}-${date.monthValue}-${date.dayOfMonth}"
-        val text = "自服务端启动起：\n" +
-                "群聊：收 $receiveGroupMsgCount / 发 $sendGroupMsgCount\n" +
-                "好友：收 $receiveFriendMsgCount / 发 $sendFriendMsgCount\n" +
-                "----------\n" +
-                "今日：收 ${receiveCount[dateStr] ?: 0} / 发 ${sendCount[dateStr] ?: 0}"
-        subject.sendMessage(text)
+        update()
+        var result: Pair<Int, Int>
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val text = StringBuilder().append("近七日 (日期: 收 / 发)：\n")
+        for (i in 6L downTo 0L) {
+            val queryDate = date.minusDays(i)
+            result = querySendAndReceive(Date.valueOf(queryDate))
+            text.append("${queryDate.format(formatter)}: ${result.second} / ${result.first}\n")
+        }
+        subject.sendMessage(text.toString())
+    }
+
+    fun update() {
+        val date = LocalDate.now()
+        updateReceive(Date.valueOf(date), receiveCount)
+        updateSend(Date.valueOf(date), sendCount)
+        receiveCount = 0
+        sendCount = 0
     }
 
     /**
@@ -76,9 +73,9 @@ object Status: SimpleListenerHost() {
     fun scheduleHourlyTask(task: () -> Unit) {
         val timer = Timer()
         val now = Calendar.getInstance()
-        now.set(Calendar.MINUTE, 0)
-        now.set(Calendar.SECOND, 0)
-        now.set(Calendar.MILLISECOND, 0)
+        now.set(Calendar.MINUTE, 59)
+        now.set(Calendar.SECOND, 59)
+        now.set(Calendar.MILLISECOND, 500)
         if (now.timeInMillis < System.currentTimeMillis()) {
             now.add(Calendar.HOUR_OF_DAY, 1)
         }
