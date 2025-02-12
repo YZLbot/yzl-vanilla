@@ -40,8 +40,8 @@ object StatusRecorder {
         val query = """
             INSERT INTO status (date, send, receive, sign, nudge)
             VALUES (?, ?, 0, 0, 0)
-            ON DUPLICATE KEY UPDATE
-            send = send + VALUES(send);
+            ON CONFLICT(date) DO UPDATE SET
+            send = send + excluded.send;
         """
 
         DBUtils.connectToDB().use { connection ->
@@ -58,8 +58,8 @@ object StatusRecorder {
         val query = """
             INSERT INTO status (date, send, receive, sign, nudge)
             VALUES (?, 0, ?, 0, 0)
-            ON DUPLICATE KEY UPDATE
-            send = receive + VALUES(receive);
+            ON CONFLICT(date) DO UPDATE SET
+            receive = receive + excluded.receive;
         """
 
         DBUtils.connectToDB().use { connection ->
@@ -76,7 +76,7 @@ object StatusRecorder {
         val query = """
             INSERT INTO status (date, send, receive, sign, nudge)
             VALUES (?, 0, 0, 0, 1)
-            ON DUPLICATE KEY UPDATE
+            ON CONFLICT(date) DO UPDATE SET
             send = send + 1;
         """
 
@@ -93,7 +93,7 @@ object StatusRecorder {
         val query = """
             INSERT INTO status (date, send, receive, sign, nudge)
             VALUES (?, 0, 0, 1, 0)
-            ON DUPLICATE KEY UPDATE
+            ON CONFLICT(date) DO UPDATE SET
             sign = sign + 1;
         """
 
