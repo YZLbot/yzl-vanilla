@@ -64,8 +64,8 @@ object StatusRecorder {
 
         DBUtils.connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
-                preparedStatement.setInt(1, delta)
-                preparedStatement.setDate(2, date)
+                preparedStatement.setDate(1, date)
+                preparedStatement.setInt(2, delta)
 
                 preparedStatement.executeUpdate()
             }
@@ -77,7 +77,7 @@ object StatusRecorder {
             INSERT INTO status (date, send, receive, sign, nudge)
             VALUES (?, 0, 0, 0, 1)
             ON CONFLICT(date) DO UPDATE SET
-            send = send + 1;
+            nudge = nudge + 1;
         """
 
         DBUtils.connectToDB().use { connection ->
