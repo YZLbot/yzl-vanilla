@@ -38,7 +38,11 @@ object Account : SimpleListenerHost() {
             val userId = message.getRemovedPrefixCommand("me").toLongOrNull() ?: sender.id
             initUserAccount(userId, sender.nick)
             val userAccount = queryAccount(userId).first()
-            val hitokoto = getHitokoto("d")
+            val hitokoto: MyHitokoto = try {
+                getHitokoto("d")
+            } catch (e: Exception) {
+                MyHitokoto(0, "", "[未获取到一言]", "", "", null, "", 0, 0, "", "", 0)
+            }
             val result = "称呼：${userAccount.userNick}\n" +
                     "经验：${userAccount.experience}\n" +
                     "li：${userAccount.money} li\n" +
