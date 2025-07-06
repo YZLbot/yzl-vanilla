@@ -120,6 +120,7 @@ object AutoGroup : SimpleListenerHost() {
         val msg = when {
             origin.isOwner() || new.isOwner() -> PlainText("群主变了？？？")
             origin.isAdministrator() && !new.isOperator() -> At(member).plus(PlainText(" 的管理没了，好可惜"))
+            member.id == bot.id -> return
             else -> At(member).plus(PlainText(" 升职啦！"))
         }
         group.sendMessage(msg)
