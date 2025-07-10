@@ -27,7 +27,7 @@ mirai {
 }
 
 dependencies {
-    val overflowVersion = "1.0.2.549-29bc0c5-SNAPSHOT"
+    val overflowVersion = "1.0.6.648-215d632-SNAPSHOT"
     val ktorVersion = "2.3.8"
     compileOnly("top.mrxiaom.mirai:overflow-core:$overflowVersion")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
