@@ -181,7 +181,6 @@ object EVocalRackUtils {
     suspend fun getLatestRank(): VideoData {
         val response: HttpResponse = client.get("https://www.evocalrank.com/data/info/latest.json")
         val responseBody = response.bodyAsText()
-        client.close()
         return Json { ignoreUnknownKeys = true }.decodeFromString(VideoData.serializer(), responseBody)
     }
 
