@@ -13,12 +13,14 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
+import net.mamoe.mirai.contact.Contact
+import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import top.tbpdt.vanilla.PluginMain
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 
 object PubDateSerializer : KSerializer<String> {
@@ -31,6 +33,7 @@ object PubDateSerializer : KSerializer<String> {
             is JsonArray -> {
                 input.firstOrNull()?.jsonPrimitive?.content ?: ""
             }
+
             else -> throw IllegalArgumentException("Unsupported format for pubdate")
         }
     }
@@ -186,7 +189,7 @@ object EVocalRackUtils {
 
     val picPath = "${PluginMain.dataFolder}${File.separator}biliCover${File.separator}"
 
-    suspend fun downloadImage(av: String, url: String): String {
+    suspend fun getImage(av: String, url: String, contact: Contact): Image? {
         val client = OkHttpClient()
         PluginMain.logger.info("尝试为 $av 获取封面 $url")
 
@@ -194,23 +197,25 @@ object EVocalRackUtils {
             "User-Agent",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0"
         ).build()
-        var fileName: String
+
+        var image: Image? = null
+
         client.newCall(request).execute().use { response: Response ->
             if (!response.isSuccessful) {
                 PluginMain.logger.error("意外的 HTTP 状态码：$response")
                 throw IOException("Unexpected code $response")
             }
-            fileName = "$av.jpg"
-            FileOutputStream(File(picPath + fileName)).use { outputStream ->
-                response.body?.byteStream()?.use { inputStream ->
-                    inputStream.copyTo(outputStream)
-                } ?: {
-                    PluginMain.logger.error("Response Body 为空！")
-                    throw IOException("Response body is null")
+            response.body?.byteStream()?.use { inputStream ->
+                inputStream.use { input ->
+                    image = input.toExternalResource().use { resource ->
+                        contact.uploadImage(resource)
+                    }
                 }
+            } ?: {
+                PluginMain.logger.error("Response Body 为空！")
+                throw IOException("Response body is null")
             }
-            PluginMain.logger.info("图片已保存为 ${picPath}$fileName")
         }
-        return fileName
+        return image
     }
 }
