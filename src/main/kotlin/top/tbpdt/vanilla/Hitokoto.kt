@@ -6,6 +6,11 @@ import io.ktor.client.statement.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import net.mamoe.mirai.event.EventHandler
+import net.mamoe.mirai.event.EventPriority
+import net.mamoe.mirai.event.SimpleListenerHost
+import net.mamoe.mirai.event.events.GroupMessageEvent
+import top.tbpdt.utils.MessageUtils.getPlainText
 
 
 /**
@@ -58,4 +63,20 @@ suspend fun getHitokoto(type: String): MyHitokoto {
     val responseBody = response.bodyAsText()
     client.close()
     return Json.decodeFromString(MyHitokoto.serializer(), responseBody)
+}
+
+object Hitokoto: SimpleListenerHost() {
+    @EventHandler(priority = EventPriority.LOWEST)
+    suspend fun GroupMessageEvent.onHitokoto(){
+        if(!message.getPlainText().equals("一言")){
+            return
+        }
+        val hitokoto: MyHitokoto = try {
+            getHitokoto("d")
+        } catch (e: Exception) {
+            MyHitokoto(0, "", "[未获取到一言]", "", "", null, "", 0, 0, "", "", 0)
+        }
+        group.sendMessage("${hitokoto.hitokoto}\n" +
+                "——${hitokoto.fromWho ?: ""}${if (hitokoto.from == hitokoto.fromWho) "" else "《" + hitokoto.from + "》"}")
+    }
 }

@@ -9,12 +9,13 @@ import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.EventPriority
 import net.mamoe.mirai.event.SimpleListenerHost
 import net.mamoe.mirai.event.events.GroupMessageEvent
+import net.mamoe.mirai.message.data.ForwardMessageBuilder
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
+import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.emptyMessageChain
 import top.tbpdt.utils.MessageUtils.getRemovedPrefixCommand
 import top.tbpdt.utils.MessageUtils.isCommand
-import top.tbpdt.vanilla.utils.EVocalRackUtils
-import top.tbpdt.vanilla.utils.EVocalRackUtils.downloadImage
+import top.tbpdt.vanilla.utils.EVocalRackUtils.getImage
 import top.tbpdt.vanilla.utils.EVocalRackUtils.getLatestRank
 
 
@@ -27,8 +28,8 @@ object EVocalRank : SimpleListenerHost() {
         val requestRank = message.getRemovedPrefixCommand("vcrank").toIntOrNull()
 
         if (requestRank != null) {
-            if (requestRank !in 1..110) {
-                group.sendMessage("你查询的曲子超出了排行榜范围(1~110)！")
+            if (requestRank !in 1..30) {
+                group.sendMessage("你查询的曲子超出了主榜范围(1~30)！")
                 return
             }
             group.sendMessage(message.quote() + "加载中……")
@@ -39,7 +40,7 @@ object EVocalRank : SimpleListenerHost() {
                 e.printStackTrace()
                 return
             }
-            val requestData = latestData.main_rank[requestRank]
+            val requestData = latestData.main_rank[requestRank - 1]
             val returnStr = "#${requestRank}\n" +
                     "${requestData.title}\n" +
                     "得分: ${requestData.point}\n" +
@@ -51,8 +52,12 @@ object EVocalRank : SimpleListenerHost() {
                     "收藏: ${requestData.favorite}\n" +
                     "硬币: ${requestData.coin}\n" +
                     requestData.url + "\n"
-            downloadImage(requestData.avid, requestData.coverurl)
-            group.sendMessage(returnStr + "[mirai:image:file:///${EVocalRackUtils.picPath}${requestData.avid}]")
+            val image = getImage(requestData.avid, requestData.coverurl, group)
+            if (image == null) {
+                group.sendMessage("$returnStr[视频封面获取失败]")
+            } else {
+                group.sendMessage(PlainText(returnStr) + image)
+            }
             return
         }
         val latestData = try {
@@ -68,19 +73,20 @@ object EVocalRank : SimpleListenerHost() {
                 "新曲入榜数: ${latestData.statistic.new_in_rank_count}首\n" +
                 "新曲入主榜数: ${latestData.statistic.new_in_mainrank_count}首\n" +
                 "最后收录时间: ${latestData.collect_end_time}\n" +
-                "发送 .vcrank [排名] 以获取详细信息~"
+                "发送 .vcrank [排名(1~30)] 以获取主榜详细信息~"
         group.sendMessage(overviewStr)
 
-        var result = emptyMessageChain()
-        val rankStrBuilder: StringBuilder = StringBuilder().append("主榜")
+        var chain = emptyMessageChain()
+        val result = ForwardMessageBuilder(group)
+        chain += PlainText("主榜\n")
         for (i in latestData.main_rank) {
-            rankStrBuilder.append("#${i.rank} ${i.title} (${i.avid})")
-            if (i.rank % 20 == 0) {
-                result += rankStrBuilder.toString()
-                rankStrBuilder.clear()
+            chain += PlainText("#${i.rank} ${i.title}\n")
+            if (i.rank % 10 == 0) {
+                result.add(bot.id, bot.nick, chain)
+                chain = emptyMessageChain()
             }
         }
-        group.sendMessage(result)
+        group.sendMessage(result.build())
 
 //        val mainRankStr = mainRankStrBuilder.toString()
 //
