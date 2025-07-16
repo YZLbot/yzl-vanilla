@@ -7,6 +7,7 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.emptyMessageChain
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
+import net.mamoe.mirai.utils.ExternalResource.Companion.uploadAsImage
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -533,7 +534,7 @@ object CaveUtils {
                 logger.info("检查图片中，url = $imageUrl")
                 if (isPicExists(imageUrl)) {
                     val fileName = queryName(imageUrl)
-                    result += "[mirai:image:file:///$picPath${fileName}]".deserializeMiraiCode()
+                    result += File("$picPath$fileName").uploadAsImage(contact)
                     logger.info("图片 $fileName 存在于本地，已插入到消息中")
                 } else {
                     logger.info("发现未下载的图片，正在下载：$imageUrl")
