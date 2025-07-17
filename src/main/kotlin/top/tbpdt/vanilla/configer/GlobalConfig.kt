@@ -99,4 +99,9 @@ object GlobalConfig : AutoSavePluginConfig("Config") {
         """
     )
     val signBlacklistGroups: Set<Long> by value(setOf(12345L, 171863776L))
+
+    @ValueDescription("""
+        歌词JSON文件名
+    """)
+    val LyricsJSON: String by value("random-lyric-data.min.json")
 }

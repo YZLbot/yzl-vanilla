@@ -53,22 +53,32 @@ data class MyHitokoto(
     val length: Int
 )
 
-suspend fun getHitokoto(type: String): MyHitokoto {
-    val client = HttpClient()
-    val response: HttpResponse = client.get("https://v1.hitokoto.cn/") {
-        parameter("c", type)
-        parameter("encode", "json")
-        parameter("charset", "utf-8")
-    }
-    val responseBody = response.bodyAsText()
-    client.close()
-    return Json.decodeFromString(MyHitokoto.serializer(), responseBody)
-}
+val client = HttpClient()
 
 object Hitokoto: SimpleListenerHost() {
+
+    suspend fun getHitokoto(type: String): MyHitokoto {
+
+        val response: HttpResponse = client.get("https://v1.hitokoto.cn/") {
+            parameter("c", type)
+            parameter("encode", "json")
+            parameter("charset", "utf-8")
+        }
+        val responseBody = response.bodyAsText()
+        return Json.decodeFromString(MyHitokoto.serializer(), responseBody)
+    }
+
+    fun MyHitokoto.toFixedString(): String{
+        if(this.id == 0){
+            return "[未获取到一言]"
+        }
+        return  "${this.hitokoto}\n" +
+                "——${this.fromWho ?: ""}${if (this.from == this.fromWho) "" else "《" + this.from + "》"}"
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     suspend fun GroupMessageEvent.onHitokoto(){
-        if(!message.getPlainText().equals("一言")){
+        if(message.getPlainText() != "一言"){
             return
         }
         val hitokoto: MyHitokoto = try {

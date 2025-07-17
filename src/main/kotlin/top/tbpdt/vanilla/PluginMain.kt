@@ -55,6 +55,7 @@ object PluginMain : KotlinPlugin(
         AutoPics.registerTo(globalEventChannel())
         Status.registerTo(globalEventChannel())
         EVocalRank.registerTo(globalEventChannel())
+        RaindomLyric.registerTo(globalEventChannel())
 //        Ollama.registerTo(globalEventChannel())
         logger.info { "正在加载数据库" }
         DBUtils.initCaveDB()
@@ -83,6 +84,7 @@ object PluginMain : KotlinPlugin(
         AutoPics.cancel()
         Status.cancel()
         EVocalRank.cancel()
+        RaindomLyric.cancel()
 //        Ollama.cancel()
         logger.info { "禁用成功！" }
     }

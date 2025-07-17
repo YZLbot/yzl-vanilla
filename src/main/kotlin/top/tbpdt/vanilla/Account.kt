@@ -24,9 +24,12 @@ import top.tbpdt.utils.MessageUtils.getPlainText
 import top.tbpdt.utils.MessageUtils.getRemovedPrefixCommand
 import top.tbpdt.utils.MessageUtils.isCommand
 import top.tbpdt.utils.MessageUtils.parseCommand
+import top.tbpdt.vanilla.Hitokoto.toFixedString
+import top.tbpdt.vanilla.RaindomLyric.toFixedString
 import top.tbpdt.vanilla.utils.StatusRecorder
 import java.sql.Date
 import java.time.LocalDate
+import kotlin.random.Random
 
 /**
  * @author Takeoff0518
@@ -38,10 +41,10 @@ object Account : SimpleListenerHost() {
             val userId = message.getRemovedPrefixCommand("me").toLongOrNull() ?: sender.id
             initUserAccount(userId, sender.nick)
             val userAccount = queryAccount(userId).first()
-            val hitokoto: MyHitokoto = try {
-                getHitokoto("d")
-            } catch (e: Exception) {
-                MyHitokoto(0, "", "[未获取到一言]", "", "", null, "", 0, 0, "", "", 0)
+            val hitikoto = if (Random.nextInt(0, 2) == 1){
+                RaindomLyric.getLyrics().toFixedString()
+            } else {
+                Hitokoto.getHitokoto("d").toFixedString()
             }
             val result = "称呼：${userAccount.userNick}\n" +
                     "经验：${userAccount.experience}\n" +
@@ -54,8 +57,7 @@ object Account : SimpleListenerHost() {
                     } 天\n" +
                     "已累计签到 ${userAccount.totalSignDays} 天\n" +
                     "---------------\n" +
-                    "${hitokoto.hitokoto}\n" +
-                    "——${hitokoto.fromWho ?: ""}${if (hitokoto.from == hitokoto.fromWho) "" else "《" + hitokoto.from + "》"}"
+                    hitikoto
             group.sendMessage(message.quote() + result)
         }
         if (message.isCommand("sign") || message.getPlainText().trim().startsWith("签到")) {
@@ -73,10 +75,10 @@ object Account : SimpleListenerHost() {
             val userAccount = queryAccount(sender.id).first()
             updateMoney(sender.id, userAccount.money + deltaMoney)
             updateExperience(sender.id, userAccount.experience + deltaExperience)
-            val hitokoto: MyHitokoto = try {
-                getHitokoto("d")
-            } catch (e: Exception) {
-                MyHitokoto(0, "", "[未获取到一言]", "", "", null, "", 0, 0, "", "", 0)
+            val hitikoto = if (Random.nextInt(0, 2) == 1){
+                RaindomLyric.getLyrics().toFixedString()
+            } else {
+                Hitokoto.getHitokoto("d").toFixedString()
             }
             StatusRecorder.updateSign(Date.valueOf(LocalDate.now()))
             val result =
@@ -86,8 +88,7 @@ object Account : SimpleListenerHost() {
                         "已连续签到 $continuousSignDays 天\n" +
                         "已累计签到 $totalSignDays 天\n" +
                         "---------------\n" +
-                        "${hitokoto.hitokoto}\n" +
-                        "——${hitokoto.fromWho ?: ""}${if (hitokoto.from == hitokoto.fromWho) "" else "《" + hitokoto.from + "》"}"
+                        hitikoto
             group.sendMessage(message.quote() + result)
         }
         if (message.isCommand("nick")) {
