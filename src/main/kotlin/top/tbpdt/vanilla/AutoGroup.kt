@@ -1,6 +1,7 @@
 package top.tbpdt.vanilla
 
 import kotlinx.coroutines.delay
+import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.isAdministrator
 import net.mamoe.mirai.contact.isOperator
 import net.mamoe.mirai.contact.isOwner
@@ -12,6 +13,7 @@ import net.mamoe.mirai.message.code.MiraiCode.deserializeMiraiCode
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.PlainText
+import top.mrxiaom.overflow.contact.RemoteBot
 import top.tbpdt.configer.AutoConfig
 import top.tbpdt.configer.AutoConfig.botUnmutedMessage
 import top.tbpdt.configer.AutoConfig.counterNudge
@@ -149,20 +151,23 @@ object AutoGroup : SimpleListenerHost() {
         if (target.id != bot.id) {
             return
         }
+        if (subject !is Group) {
+            return
+        }
         StatusRecorder.updateNudge(Date.valueOf(LocalDate.now()))
         val randomNum = (1..100).random()
         if (randomNum <= superNudge) {
             subject.sendMessage(superNudgeMessage)
             repeat(superNudgeTimes) {
-                from.nudge().sendTo(subject)
                 delay((500L..1000L).random())
+                (bot as RemoteBot).executeAction("group_poke", "{\"group_id\": \"${subject.id}\",\"user_id\": \"${from.id}\"}")
             }
             return
         }
         if (randomNum <= counterNudge) {
             subject.sendMessage(counterNudgeMessage.random())
             delay((500L..2000L).random())
-            from.nudge().sendTo(subject)
+            (bot as RemoteBot).executeAction("group_poke", "{\"group_id\": \"${subject.id}\",\"user_id\": \"${from.id}\"}")
             delay((500L..2000L).random())
             subject.sendMessage(counterNudgeCompleteMessage.random())
             return
