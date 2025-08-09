@@ -23,6 +23,7 @@ import top.tbpdt.configer.AutoConfig.defaultNewMemberJoinMessage
 import top.tbpdt.configer.AutoConfig.groupMuteAllRelease
 import top.tbpdt.configer.AutoConfig.newMemberJoinMessage
 import top.tbpdt.configer.AutoConfig.nudgedReply
+import top.tbpdt.configer.AutoConfig.nudgedeplyProbability
 import top.tbpdt.configer.AutoConfig.superNudge
 import top.tbpdt.configer.AutoConfig.superNudgeMessage
 import top.tbpdt.configer.AutoConfig.superNudgeTimes
@@ -155,8 +156,10 @@ object AutoGroup : SimpleListenerHost() {
             return
         }
         StatusRecorder.updateNudge(Date.valueOf(LocalDate.now()))
-        val randomNum = (1..100).random()
-        if (randomNum <= superNudge) {
+        if((1..100).random() > nudgedeplyProbability){
+            return
+        }
+        if ((1..100).random() <= superNudge) {
             subject.sendMessage(superNudgeMessage)
             repeat(superNudgeTimes) {
                 delay((500L..1000L).random())
@@ -164,7 +167,7 @@ object AutoGroup : SimpleListenerHost() {
             }
             return
         }
-        if (randomNum <= counterNudge) {
+        if ((1..100).random() <= counterNudge) {
             subject.sendMessage(counterNudgeMessage.random())
             delay((500L..2000L).random())
             (bot as RemoteBot).executeAction("group_poke", "{\"group_id\": \"${subject.id}\",\"user_id\": \"${from.id}\"}")

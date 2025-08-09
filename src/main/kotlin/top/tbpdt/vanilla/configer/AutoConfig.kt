@@ -33,6 +33,13 @@ object AutoConfig : AutoSavePluginConfig("AutoConfig") {
 
     @ValueDescription(
         """
+        被戳后回复几率 (0~100)
+        """
+    )
+    val nudgedeplyProbability: Int by value(40)
+
+    @ValueDescription(
+        """
         Bot 被戳时的回复
         可任意按照格式添加
         当戳一戳未触发反击时便随机选取列表中的消息发送
