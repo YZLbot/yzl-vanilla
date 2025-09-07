@@ -1,5 +1,6 @@
 package top.tbpdt.utils
 
+import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.vanilla.PluginMain.logger
 import java.sql.Date
 import java.sql.Timestamp
@@ -304,7 +305,6 @@ object AccountUtils {
     }
 
 
-
     /**
      * 获取钱数
      */
@@ -380,14 +380,26 @@ object AccountUtils {
         val intervalDays = getDaysBetweenDates(userAccount.lastSignDate, nowDate)
         return when {
             intervalDays > 1 -> { // 未能连续签到
-                val updatedTotalSignDays = userAccount.totalSignDays + 1
-                updateSign(
-                    userId,
-                    nowDate,
-                    updatedTotalSignDays,
-                    1
-                )
-                Pair(updatedTotalSignDays, 1)
+                if (GlobalConfig.enableSignLapse) { //
+                    val updatedTotalSignDays = userAccount.totalSignDays + 1
+                    updateSign(
+                        userId,
+                        nowDate,
+                        updatedTotalSignDays,
+                        1
+                    )
+                    Pair(updatedTotalSignDays, 1)
+                } else {
+                    val updatedTotalSignDays = userAccount.totalSignDays + 1
+                    val updatedContinuousSignDays = userAccount.continuousSignDays + 1
+                    updateSign(
+                        userId,
+                        nowDate,
+                        updatedTotalSignDays,
+                        updatedContinuousSignDays
+                    )
+                    Pair(updatedTotalSignDays, updatedContinuousSignDays)
+                }
             }
 
             intervalDays == 1 -> { // 连续签到
