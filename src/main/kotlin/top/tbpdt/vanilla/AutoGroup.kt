@@ -104,11 +104,11 @@ object AutoGroup : SimpleListenerHost() {
         group.sendMessage(msg)
     }
 
-//    @EventHandler(priority = EventPriority.LOWEST)
-//    suspend fun BotJoinGroupEvent.handle() {
-//        delay(1000)
-//        group.sendMessage("我来啦~")
-//    }
+    @EventHandler(priority = EventPriority.LOWEST)
+    suspend fun BotJoinGroupEvent.handle() {
+        delay(1000)
+        group.sendMessage("我来啦~")
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     suspend fun GroupMuteAllEvent.handle() {
