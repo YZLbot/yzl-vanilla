@@ -44,7 +44,11 @@ object Account : SimpleListenerHost() {
             val hitikoto = if (Random.nextInt(0, 2) == 1){
                 RaindomLyric.getLyrics().toFixedString()
             } else {
-                Hitokoto.getHitokoto("d").toFixedString()
+                try {
+                    Hitokoto.getHitokoto("d").toFixedString()
+                } catch (e: Exception) {
+                    RaindomLyric.getLyrics().toFixedString()
+                }
             }
             val result = "称呼：${userAccount.userNick}\n" +
                     "经验：${userAccount.experience}\n" +
@@ -78,7 +82,11 @@ object Account : SimpleListenerHost() {
             val hitikoto = if (Random.nextInt(0, 2) == 1){
                 RaindomLyric.getLyrics().toFixedString()
             } else {
-                Hitokoto.getHitokoto("d").toFixedString()
+                try {
+                    Hitokoto.getHitokoto("d").toFixedString()
+                } catch (e: Exception) {
+                    RaindomLyric.getLyrics().toFixedString()
+                }
             }
             StatusRecorder.updateSign(Date.valueOf(LocalDate.now()))
             val result =
