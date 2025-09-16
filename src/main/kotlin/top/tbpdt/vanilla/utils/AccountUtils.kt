@@ -198,52 +198,7 @@ object AccountUtils {
         }
     }
 
-    /**
-     * 获取账号信息
-     */
-    fun queryAccount(userId: Long): List<Account> {
-        val query = """
-        SELECT user_nick, encounter_date, last_sign_date, total_sign_days, continuous_sign_days, money, experience 
-        FROM accounts WHERE user_id = ?
-    """
-
-        DBUtils.connectToDB().use { connection ->
-            connection.prepareStatement(query).use { preparedStatement ->
-                preparedStatement.setLong(1, userId)
-
-                val resultSet = preparedStatement.executeQuery()
-
-                return generateSequence {
-                    if (resultSet.next()) {
-                        Account(
-                            userId,
-                            resultSet.getString("user_nick"),
-                            resultSet.getDate("encounter_date"),
-                            resultSet.getDate("last_sign_date"),
-                            resultSet.getInt("total_sign_days"),
-                            resultSet.getInt("continuous_sign_days"),
-                            resultSet.getInt("money"),
-                            resultSet.getInt("experience")
-                        )
-                    } else {
-                        null
-                    }
-                }.toList()
-            }
-        }
-    }
-
-    /**
-     * 获取账号信息，并按照money字段排名返回前10条记录
-     */
-    fun queryMoneyRank(): List<Account> {
-        val query = """
-        SELECT user_id, user_nick, encounter_date, last_sign_date, total_sign_days, continuous_sign_days, money, experience 
-        FROM accounts
-        ORDER BY money DESC
-        LIMIT 10
-    """
-
+    fun generateFullAccountList(query: String): List<Account> {
         DBUtils.connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
                 val resultSet = preparedStatement.executeQuery()
@@ -266,6 +221,39 @@ object AccountUtils {
                 }.toList()
             }
         }
+    }
+
+    /**
+     * 获取账号信息
+     */
+    fun queryAccount(userId: Long): List<Account> {
+        val query = """
+        SELECT user_nick, encounter_date, last_sign_date, total_sign_days, continuous_sign_days, money, experience 
+        FROM accounts WHERE user_id = ?
+    """
+
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setLong(1, userId)
+
+                generateFullAccountList(query)
+            }
+        }
+
+        return generateFullAccountList(query)
+    }
+
+    /**
+     * 获取账号信息，并按照money字段排名返回前10条记录
+     */
+    fun queryMoneyRank(): List<Account> {
+        val query = """
+        SELECT user_id, user_nick, encounter_date, last_sign_date, total_sign_days, continuous_sign_days, money, experience 
+        FROM accounts
+        ORDER BY money DESC
+        LIMIT 10
+    """
+        return generateFullAccountList(query)
     }
 
 
@@ -280,28 +268,7 @@ object AccountUtils {
         LIMIT 10
     """
 
-        DBUtils.connectToDB().use { connection ->
-            connection.prepareStatement(query).use { preparedStatement ->
-                val resultSet = preparedStatement.executeQuery()
-
-                return generateSequence {
-                    if (resultSet.next()) {
-                        Account(
-                            resultSet.getLong("user_id"),
-                            resultSet.getString("user_nick"),
-                            resultSet.getDate("encounter_date"),
-                            resultSet.getDate("last_sign_date"),
-                            resultSet.getInt("total_sign_days"),
-                            resultSet.getInt("continuous_sign_days"),
-                            resultSet.getInt("money"),
-                            resultSet.getInt("experience")
-                        )
-                    } else {
-                        null
-                    }
-                }.toList()
-            }
-        }
+        return generateFullAccountList(query)
     }
 
 
