@@ -1,5 +1,6 @@
 package top.tbpdt.utils
 
+import top.tbpdt.configer.GlobalConfig
 import top.tbpdt.vanilla.PluginMain.logger
 import java.sql.Date
 import java.sql.Timestamp
@@ -197,52 +198,7 @@ object AccountUtils {
         }
     }
 
-    /**
-     * 获取账号信息
-     */
-    fun queryAccount(userId: Long): List<Account> {
-        val query = """
-        SELECT user_nick, encounter_date, last_sign_date, total_sign_days, continuous_sign_days, money, experience 
-        FROM accounts WHERE user_id = ?
-    """
-
-        DBUtils.connectToDB().use { connection ->
-            connection.prepareStatement(query).use { preparedStatement ->
-                preparedStatement.setLong(1, userId)
-
-                val resultSet = preparedStatement.executeQuery()
-
-                return generateSequence {
-                    if (resultSet.next()) {
-                        Account(
-                            userId,
-                            resultSet.getString("user_nick"),
-                            resultSet.getDate("encounter_date"),
-                            resultSet.getDate("last_sign_date"),
-                            resultSet.getInt("total_sign_days"),
-                            resultSet.getInt("continuous_sign_days"),
-                            resultSet.getInt("money"),
-                            resultSet.getInt("experience")
-                        )
-                    } else {
-                        null
-                    }
-                }.toList()
-            }
-        }
-    }
-
-    /**
-     * 获取账号信息，并按照money字段排名返回前10条记录
-     */
-    fun queryMoneyRank(): List<Account> {
-        val query = """
-        SELECT user_id, user_nick, encounter_date, last_sign_date, total_sign_days, continuous_sign_days, money, experience 
-        FROM accounts
-        ORDER BY money DESC
-        LIMIT 10
-    """
-
+    fun generateFullAccountList(query: String): List<Account> {
         DBUtils.connectToDB().use { connection ->
             connection.prepareStatement(query).use { preparedStatement ->
                 val resultSet = preparedStatement.executeQuery()
@@ -265,6 +221,39 @@ object AccountUtils {
                 }.toList()
             }
         }
+    }
+
+    /**
+     * 获取账号信息
+     */
+    fun queryAccount(userId: Long): List<Account> {
+        val query = """
+        SELECT user_nick, encounter_date, last_sign_date, total_sign_days, continuous_sign_days, money, experience 
+        FROM accounts WHERE user_id = ?
+    """
+
+        DBUtils.connectToDB().use { connection ->
+            connection.prepareStatement(query).use { preparedStatement ->
+                preparedStatement.setLong(1, userId)
+
+                generateFullAccountList(query)
+            }
+        }
+
+        return generateFullAccountList(query)
+    }
+
+    /**
+     * 获取账号信息，并按照money字段排名返回前10条记录
+     */
+    fun queryMoneyRank(): List<Account> {
+        val query = """
+        SELECT user_id, user_nick, encounter_date, last_sign_date, total_sign_days, continuous_sign_days, money, experience 
+        FROM accounts
+        ORDER BY money DESC
+        LIMIT 10
+    """
+        return generateFullAccountList(query)
     }
 
 
@@ -279,30 +268,8 @@ object AccountUtils {
         LIMIT 10
     """
 
-        DBUtils.connectToDB().use { connection ->
-            connection.prepareStatement(query).use { preparedStatement ->
-                val resultSet = preparedStatement.executeQuery()
-
-                return generateSequence {
-                    if (resultSet.next()) {
-                        Account(
-                            resultSet.getLong("user_id"),
-                            resultSet.getString("user_nick"),
-                            resultSet.getDate("encounter_date"),
-                            resultSet.getDate("last_sign_date"),
-                            resultSet.getInt("total_sign_days"),
-                            resultSet.getInt("continuous_sign_days"),
-                            resultSet.getInt("money"),
-                            resultSet.getInt("experience")
-                        )
-                    } else {
-                        null
-                    }
-                }.toList()
-            }
-        }
+        return generateFullAccountList(query)
     }
-
 
 
     /**
@@ -380,14 +347,26 @@ object AccountUtils {
         val intervalDays = getDaysBetweenDates(userAccount.lastSignDate, nowDate)
         return when {
             intervalDays > 1 -> { // 未能连续签到
-                val updatedTotalSignDays = userAccount.totalSignDays + 1
-                updateSign(
-                    userId,
-                    nowDate,
-                    updatedTotalSignDays,
-                    1
-                )
-                Pair(updatedTotalSignDays, 1)
+                if (GlobalConfig.enableSignLapse) { //
+                    val updatedTotalSignDays = userAccount.totalSignDays + 1
+                    updateSign(
+                        userId,
+                        nowDate,
+                        updatedTotalSignDays,
+                        1
+                    )
+                    Pair(updatedTotalSignDays, 1)
+                } else {
+                    val updatedTotalSignDays = userAccount.totalSignDays + 1
+                    val updatedContinuousSignDays = userAccount.continuousSignDays + 1
+                    updateSign(
+                        userId,
+                        nowDate,
+                        updatedTotalSignDays,
+                        updatedContinuousSignDays
+                    )
+                    Pair(updatedTotalSignDays, updatedContinuousSignDays)
+                }
             }
 
             intervalDays == 1 -> { // 连续签到

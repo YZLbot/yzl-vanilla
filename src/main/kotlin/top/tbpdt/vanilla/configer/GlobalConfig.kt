@@ -99,4 +99,14 @@ object GlobalConfig : AutoSavePluginConfig("Config") {
         """
     )
     val signBlacklistGroups: Set<Long> by value(setOf(12345L, 171863776L))
+
+    @ValueDescription("""
+        使能断签，若因 bot 故障导致大量用户断签，考虑将其设置为 false 数天以防止用户断签
+    """)
+    val enableSignLapse: Boolean by value(true)
+
+    @ValueDescription("""
+        歌词JSON文件名
+    """)
+    val LyricsJSON: String by value("random-lyric-data.min.json")
 }
