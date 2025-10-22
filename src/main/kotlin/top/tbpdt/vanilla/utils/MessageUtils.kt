@@ -12,7 +12,7 @@ import top.tbpdt.configer.GlobalConfig
 object MessageUtils {
     fun MessageChain.getPlainText(): String {
         var result = ""
-        for (i in listIterator()) if (i is PlainText) result += i.content
+        for (i in this) if (i is PlainText) result += i.content
         return result
     }
 
