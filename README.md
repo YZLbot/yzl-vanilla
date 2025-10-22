@@ -1,3 +1,9 @@
+该项目不再积极维护更新，感谢各位的理解与支持！
+
+v3.0 另起炉灶版: [YZLbot/yzl-kira](https://github.com/YZLbot/yzl-kira)
+
+----------
+
 # yzl-vanilla
 
 <div align="center">
@@ -74,10 +80,10 @@ For the good of the community as a whole, we strongly recommend that you do the 
 - [ ] 新闻推送（知乎）
 - [ ] 24 点
 - [ ] 斗地主
-- [ ] 轮盘赌
+- [x] 轮盘赌
   - [ ] 禁言
 - [x] 好友申请事件提示
 - [x] 加群申请提示
-- [ ] 入群验证
+- [x] 入群验证
 - [x] 敏感词审查
 - [ ] 刷屏侦测
